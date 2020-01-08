@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kovizone.admin.mapper.SystemRolePermissionMapper">
+
+	<resultMap id="SystemRolePermissionResultMap" type="com.kovizone.admin.po.SystemRolePermission">
+		<id property="rpno" column="rpno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="rno" column="rno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="pno" column="pno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+	</resultMap>
+	<insert id="grant">
+		insert into system_role_permission (rno,pno) values (#{rno},#{pno})
+	</insert>
+
+	<delete id="revoke">
+		delete from system_role_permission where rno=#{rno} and pno=#{pno}
+	</delete>
+
+	<delete id="removeByRno">
+		delete from system_role_permission where rno=#{rno};
+	</delete>
+
+	<delete id="removeByPno">
+		delete from system_role_permission where pno=#{pno};
+	</delete>
+
+	<select id="list" resultMap="SystemRolePermissionResultMap">
+		select * from system_role_permission
+		<trim prefix="where " suffixOverrides="and">
+			<if test="rpno != null">
+				rpno=#{rpno} and
+			</if>
+			<if test="rno != null">
+				rno=#{rno} and
+			</if>
+			<if test="pno != null">
+				pno=#{pno} and
+			</if>
+		</trim>
+	</select>
+
+</mapper>

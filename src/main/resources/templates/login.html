@@ -1,0 +1,85 @@
+<!doctype html>
+<html class="x-admin-sm" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>银联航旅会员平台管理系统</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.md5.js}"></script>
+    <script type="text/javascript" th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/js/kzadmin.js}"></script>
+    <!--[if lt IE 9]>-->
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <!--<![endif]-->
+    <script>
+        var localUrl = '[[${#httpServletRequest.getContextPath()}]]';
+        console.log(localUrl);
+
+        if (window.parent.window !== window) {
+            window.top.location = localUrl + "/login.do?message=会话已失效，请重新登录";
+        }
+
+        $(function () {
+            var message = $('#initResource input[name="message"]').val();
+            if (message != null && message !== '') {
+                layui.use('layer', function () {
+                    layui.layer.msg(message);
+                })
+            }
+
+            layui.use('form', function () {
+                var form = layui.form;
+                //监听提交
+                form.on('submit(login)', function (data) {
+                    sleep(500);
+                    $.post(localUrl + "/user/login.do", {
+                        username: $("#username").val(),
+                        password: $.md5($("#password").val())
+                    }, function (result) {
+                        if (result.result) {
+                            window.location.href = localUrl + "/index.do";
+                        } else {
+                            layer.msg(result.msg);
+                        }
+                    })
+                });
+            });
+
+            $(document).keyup(function (event) {
+                if (event.keyCode === 13) {
+                    $('#loginForm input[type="button"]').trigger("click");
+                }
+            });
+        })
+    </script>
+</head>
+<body class="login-bg">
+<div id="initResource" style="display: none">
+    <input type="hidden" name="message" th:value="${message}">
+</div>
+<div class="login layui-anim layui-anim-up">
+    <div class="message">银联航旅会员平台管理系统</div>
+    <div id="darkbannerwrap"></div>
+
+    <form id="loginForm" method="post" class="layui-form">
+        <input name="username" id="username" placeholder="用户名" type="text" lay-verify="required" value="admin"
+               class="layui-input">
+        <hr class="hr15">
+        <input name="password" id="password" placeholder="密码" type="password" lay-verify="required" value="yuhang123!@#"
+               class="layui-input">
+        <hr class="hr15">
+        <input value="登录" lay-submit lay-filter="login" style="width: 100%;" type="button">
+        <hr class="hr20">
+    </form>
+</div>
+<!-- 底部结束 -->
+</body>
+</html>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 开发环境日志配置文件 -->
+<configuration>
+
+    <!--设置存储路径变量-->
+    <property name="logHome" value="D://log//"/>
+    <springProperty scope="context" name="port" source="server.port"/>
+    <springProperty scope="context" name="applicationName" source="spring.application.name"/>
+
+    <!-- 导入模板 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!--控制台输出appender-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <!--设置输出格式-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>
+                <!-- 引用模板 -->
+                ${CONSOLE_LOG_PATTERN}
+            </pattern>
+            <!--设置编码-->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                ${logHome}//${applicationName}//${applicationName}.${port}.%d{yyyy-MM-dd-HH}.log
+            </FileNamePattern>
+            <!-- 日志存留时间（单位：小时） -->
+            <MaxHistory>720</MaxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>
+                <!-- 引用模板 -->
+                ${FILE_LOG_PATTERN}
+            </pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="console"/>
+        <appender-ref ref="file"/>
+    </root>
+
+    <!-- Mybatis SQL 日志输出 -->
+    <logger name="com.airepay.up.air.travel.admin.mapper" level="DEBUG"/>
+
+</configuration>

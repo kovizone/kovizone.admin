@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kovizone.admin.mapper.SystemUserMapper">
+
+	<resultMap id="SystemUserResultMap" type="com.kovizone.admin.po.SystemUser">
+		<id property="uno" column="uno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="uname" column="uname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="password" column="password" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="salt" column="salt" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="realname" column="realname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="birthday" column="birthday" javaType="java.util.Date" jdbcType="DATE"/>
+		<result property="phone" column="phone" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="status" column="status" javaType="java.lang.String" jdbcType="CHAR"/>
+		<result property="createrno" column="createrno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+
+		<result property="creatername" column="creatername" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="rnos" column="rnos" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="rnames" column="rnames" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="getByUno" resultMap="SystemUserResultMap">
+		select t1.*,t3.uname creatername,t4.rnos rnos,t4.rnames rnames from system_user
+		t1
+		left join (select t2.uno,t2.uname from system_user t2) t3 on t1.createrno=t3.uno
+		left join (select
+		tt.uno,GROUP_CONCAT(tt.rno) rnos,GROUP_CONCAT(tt.rname) rnames
+		from (select sur.uno,sr.rno,sr.rname from
+		system_user_role sur
+		left join system_role sr on sur.rno=sr.rno) tt group by tt.uno) t4 on t1.uno=t4.uno
+		where
+		t1.uno=#{uno} and t1.status='0' limit 1
+	</select>
+
+	<select id="getByUname" resultMap="SystemUserResultMap">
+		select t1.*,t3.uname creatername,t4.rnos rnos,t4.rnames rnames from
+		system_user t1
+		left join (select t2.uno,t2.uname from system_user t2) t3 on t1.createrno=t3.uno
+		left join (select
+		tt.uno,GROUP_CONCAT(tt.rno) rnos,GROUP_CONCAT(tt.rname) rnames
+		from (select sur.uno,sr.rno,sr.rname from
+		system_user_role sur
+		left join system_role sr on sur.rno=sr.rno) tt group by tt.uno) t4 on t1.uno=t4.uno
+		where
+		t1.uname=#{uname} and t1.status='0' limit 1
+	</select>
+
+	<select id="list" resultMap="SystemUserResultMap">
+		select t1.*,t3.uname creatername,t4.rnos rnos,t4.rnames rnames from system_user t1
+		left join (select t2.uno,t2.uname
+		from system_user t2) t3 on t1.createrno=t3.uno
+		left join (select tt.uno,GROUP_CONCAT(tt.rno)
+		rnos,GROUP_CONCAT(tt.rname) rnames
+		from (select sur.uno,sr.rno,sr.rname from system_user_role sur
+		left join system_role
+		sr on sur.rno=sr.rno) tt group by tt.uno) t4 on t1.uno=t4.uno
+
+		<trim prefix="where " suffixOverrides="and">
+			<if test="systemUser != null">
+				<if test="systemUser.uno != null">
+					t1.uno=#{systemUser.uno} and
+				</if>
+				<if test="systemUser.uname != null">
+					t1.uname like CONCAT('%',#{systemUser.uname},'%') and
+				</if>
+				<if test="systemUser.realname != null">
+					t1.realname like CONCAT('%',#{systemUser.realname},'%') and
+				</if>
+				<if test="systemUser.birthday != null">
+					t1.birthday=#{systemUser.birthday,jdbcType=DATE} and
+				</if>
+				<if test="systemUser.phone != null">
+					t1.phone=#{systemUser.phone} and
+				</if>
+				<if test="systemUser.status != null">
+					t1.status=#{systemUser.status} and
+				</if>
+				<if test="systemUser.createrno != null">
+					t1.createrno=#{systemUser.createrno} and
+				</if>
+			</if>
+		</trim>
+		order by t1.uno
+		<if test="startNum != null and startNum >= 0 and size != null and size != 0">
+			limit #{startNum},#{size}
+		</if>
+	</select>
+
+	<select id="count" resultType="java.lang.Integer" parameterType="com.kovizone.admin.po.SystemUser">
+		select count(1) from system_user t1
+		<trim prefix="where " suffixOverrides="and">
+			<if test="uno != null">
+				t1.uno=#{uno} and
+			</if>
+			<if test="uname != null">
+				t1.uname like CONCAT('%',#{uname},'%') and
+			</if>
+			<if test="realname != null">
+				t1.realname like CONCAT('%',#{realname},'%') and
+			</if>
+			<if test="birthday != null">
+				t1.birthday=#{birthday,jdbcType=DATE} and
+			</if>
+			<if test="phone != null">
+				t1.phone=#{phone} and
+			</if>
+			<if test="status != null">
+				t1.status=#{status} and
+			</if>
+			<if test="createrno != null">
+				t1.createrno=#{createrno} and
+			</if>
+		</trim>
+	</select>
+
+	<insert id="save" useGeneratedKeys="true" keyProperty="uno" parameterType="com.kovizone.admin.po.SystemUser">
+		insert into system_user
+
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="uno != null">
+				uno,
+			</if>
+			<if test="uname != null">
+				uname,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="salt != null">
+				salt,
+			</if>
+			<if test="realname != null">
+				realname,
+			</if>
+			<if test="birthday != null">
+				birthday,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			status,
+			<if test="createrno != null">
+				createrno,
+			</if>
+		</trim>
+
+		<trim prefix=" values (" suffix=")" suffixOverrides=",">
+			<if test="uno != null">
+				#{uno,jdbcType=INTEGER},
+			</if>
+			<if test="uname != null">
+				#{uname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="salt != null">
+				#{salt,jdbcType=VARCHAR},
+			</if>
+			<if test="realname != null">
+				#{realname,jdbcType=VARCHAR},
+			</if>
+			<if test="birthday != null">
+				#{birthday,jdbcType=DATE},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="status == null">
+				'0',
+			</if>
+			<if test="createrno != null">
+				#{createrno,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.kovizone.admin.po.SystemUser">
+		update system_user set
+		<trim suffixOverrides=",">
+			uno = #{uno,jdbcType=INTEGER},
+			uname = #{uname,jdbcType=VARCHAR},
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="salt != null">
+				salt = #{salt,jdbcType=VARCHAR},
+			</if>
+			realname = #{realname,jdbcType=VARCHAR},
+			birthday = #{birthday,jdbcType=DATE},
+			phone = #{phone,jdbcType=VARCHAR},
+			status = #{status,jdbcType=CHAR},
+			createrno = #{createrno,jdbcType=INTEGER},
+		</trim>
+		where
+		<trim suffixOverrides="AND">
+			<if test="uno != null">
+				uno = #{uno,jdbcType=INTEGER} AND
+			</if>
+		</trim>
+	</update>
+
+	<delete id="remove">
+		delete from system_user where uno=#{uno};
+	</delete>
+
+</mapper>

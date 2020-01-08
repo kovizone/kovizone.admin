@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/kzadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/formSelects-v4.css}"/>
+    <script type="text/javascript" th:src="@{/lib/layui/layui.js}" charset="utf-8"></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+    <script type="text/javascript" th:src="@{/js/kzadmin.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.md5.js}"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<!-- 隐藏域，存储初始化属性 -->
+<div id="initResource" style="display: none"></div>
+<!-- 编辑表单弹窗 -->
+<!-- 此处可作为模板 -->
+<div id="editForm" class="layui-fluid" style="display: none">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <form class="layui-form" action="" lay-filter="editForm">
+                        <!-- 隐藏属性 -->
+                        <input type="hidden" name="uno"/> <input type="hidden" name="createrno"/>
+                        <!-- 用户编辑属性 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="uname" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="realname" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">生日</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="birthday" id="editBirthdayLaydate" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手机号码</label>
+                            <div class="layui-input-block">
+                                <input type="tel" name="phone" lay-verify="phone" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="status" value="0" title="正常" class="layui-input" checked="">
+                                <input type="radio" name="status" value="1"
+                                       title="锁定" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户角色</label>
+                            <div class="layui-input-block">
+                                <select name="rno" xm-select="editRnoSelect" id="editRnoSelect">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit="" lay-filter="editFormSubmit">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 新增表单弹窗 -->
+<!-- 此处可作为模板 -->
+<div id="saveForm" class="layui-fluid" style="display: none">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <form class="layui-form" action="" lay-filter="editForm">
+                        <!-- 用户编辑属性 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="uname" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="password" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="checkPassword" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">姓名</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="realname" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">生日</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="birthday" id="saveBirthdayLaydate" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手机号码</label>
+                            <div class="layui-input-block">
+                                <input type="tel" name="phone" lay-verify="phone" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="status" value="0" title="正常" class="layui-input" checked="">
+                                <input type="radio" name="status" value="1"
+                                       title="锁定" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户角色</label>
+                            <div class="layui-input-block">
+                                <select name="rno" xm-select="saveRnoSelect" id="saveRnoSelect">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit="" lay-filter="saveFormSubmit">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 重置密码表单弹窗 -->
+<div id="resetPasswordForm" class="layui-fluid" style="display: none">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <form class="layui-form" action="" lay-filter="resetPasswordForm">
+                        <!-- 隐藏属性 -->
+                        <input type="hidden" name="uname"/>
+                        <!-- 用户编辑属性 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="newPassword1" lay-verify="required|password"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认新密码</label>
+                            <div class="layui-input-block">
+                                <input type="password" name="newPassword2" lay-verify="required|password"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit="" lay-filter="resetPasswordFormSubmit">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 顶部导航条 -->
+<div class="x-nav">
+		<span class="layui-breadcrumb">
+			<a>系统管理</a>
+			<a>
+				<cite>用户管理</cite>
+			</a>
+		</span>
+    <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
+       onclick="location.reload()" title="刷新">
+        <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
+    </a>
+</div>
+
+<!-- 主要内容 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+                    <!-- 搜索表单 -->
+                    <form class="layui-form layui-form-pane kvadmin-search-form">
+
+                        <div class="layui-form-item ">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">用户编号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="uno" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="uname" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">姓名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" name="realname" autocomplete="off">
+                                </div>
+                            </div>
+                            <!--<div class="layui-inline">
+                            <label class="layui-form-label">用户角色</label>
+                            <div class="layui-input-inline">
+                                <select name="rno" lay-filter="rnoSearchSelect">
+                                    <option value="" selected></option>
+                                    <option value="" th:each="systemRole:${systemRoleList}"
+                                            th:text="${systemRole.rname}" th:value="${systemRole.rno}"></option>
+                                </select>
+                            </div>
+                        </div>-->
+                            <div class="layui-inline">
+                                <div class="layui-input-inline">
+                                    <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="searchFormSubmit">
+                                        <i class="layui-icon">&#xe615;</i>
+                                        搜索
+                                    </button>
+                                    <button type="reset" class="layui-btn layui-btn-sm layui-btn-primary">重置</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 数据表格，js动态渲染 -->
+                    <table id="dataTable" lay-filter="dataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<!-- 外部定义工具条，用于渲染到表格中的操作列 -->
+<!-- lay-event属性用于layui的监听器标识 -->
+<!-- layui-btn-danger 按钮渲染为警告色 -->
+<script type="text/html" id="action">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="resetPassword">重置密码</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="dataTableToolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">新增用户</button>
+    </div>
+</script>
+<script>
+    var localUrl = '[[${#httpServletRequest.getContextPath()}]]';
+    // 初始化下拉多选框取值
+    $.post(localUrl + '/init/systemRoleList.do', function (generalData) {
+        var systemRoleList = generalData.list;
+        var html = '';
+        for (var i = 0; i < systemRoleList.length; i++) {
+            var systemRole = systemRoleList[i];
+            html += '<option value="' + systemRole.rno + '">' + systemRole.rname + '</option>';
+        }
+        $("#saveRnoSelect").html(html);
+        $("#editRnoSelect").html(html);
+    });
+
+    // 指定第三方组件根目录
+    layui.config({
+        base: localUrl + '/lib/layui/'
+    });
+    // 导入第三方组件（不加.js）
+    layui.extend({
+        formSelects: 'formSelects/formSelects-v4'
+    });
+    // use方法，加载组件
+    layui.use(['table', 'form', 'laydate', 'layer', 'formSelects'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+
+
+        // formSelects作为第三方，在use后直接在layui中拿出
+        var formSelects = layui.formSelects;
+
+        // 初始化下拉多选框
+        formSelects.render('saveRnoSelect', {
+            height: "38px"
+        });
+        formSelects.render('editRnoSelect', {
+            height: "38px"
+        });
+        formSelects.btns('saveRnoSelect', ['select', 'remove']);
+        formSelects.btns('editRnoSelect', ['select', 'remove']);
+
+        // 渲染数据表格
+        table.render({
+            id: 'dataTable',
+            elem: '#dataTable',
+            url: localUrl + '/user/list.do',
+            toolbar: '#dataTableToolbar',
+            page: true,
+            cols: [
+                [{
+                    field: 'uno',
+                    // event 用来判断点击事件，建议加上，这样点击该单元格时会有特效
+                    event: 'uno',
+                    title: "用户编号",
+                    width: 90
+                }, {
+                    field: 'uname',
+                    event: 'uname',
+                    title: "用户名",
+                    width: 90
+                }, {
+                    field: 'realname',
+                    event: 'realname',
+                    title: '真实姓名',
+                    width: 90
+                }, {
+                    field: 'birthday',
+                    event: 'birthday',
+                    title: '生日',
+                    width: 110,
+                    templet: function (d) {
+                        var html = '';
+                        html += dateFormat(d.birthday);
+                        return html;
+                    }
+                }, {
+                    field: 'phone',
+                    event: 'phone',
+                    title: '手机号码',
+                    width: 120
+                }, {
+                    field: 'status',
+                    event: 'status',
+                    title: '状态',
+                    width: 60,
+                    templet: function (d) {
+                        switch (d.status) {
+                            case "0":
+                                return "正常";
+                            case "1":
+                                return "锁定";
+                            default:
+                                return "未知";
+                        }
+                    }
+                }, {
+                    field: 'creatername',
+                    event: 'creatername',
+                    title: '创建者',
+                    width: 90
+                }, {
+                    field: 'rnames',
+                    event: 'rnames',
+                    title: '用户角色',
+                    width: 200,
+                    templet: function (d) {
+                        if (d.rnames === null || d.rnames === '') {
+                            return "无";
+                        }
+                        return d.rnames;
+                    }
+                }, {
+                    event: 'action',
+                    title: '操作',
+                    toolbar: '#action',
+                    width: 220
+                }]
+            ]
+        });
+
+        // 渲染日期选择器
+        laydate.render({
+            elem: "#editBirthdayLaydate"
+        });
+        laydate.render({
+            elem: "#saveBirthdayLaydate"
+        });
+
+        // 监听工具条
+        // 编辑表单弹窗
+        // 删除弹窗
+        table.on('tool(dataTable)', function (obj) {
+            var data = obj.data;// 该行数据
+            var event = obj.event;// 该行event属性值
+            if (event === 'edit') {
+
+                var cssFlag = null;
+                var selector = '#editForm';// 编辑弹窗选择
+
+                layer.open({
+                    type: 1,
+                    resize: false,
+                    area: '400px',
+                    shadeClose: true,
+                    title: '编辑',
+                    content: $(selector),
+                    success: function () {
+                        if (data.rnos !== null && data.rnos !== '') {
+                            formSelects.value('editRnoSelect', data.rnos.split(","));
+                        } else {
+                            formSelects.render('editRnoSelect', {
+                                height: "38px"
+                            });
+                        }
+                        // 表单初始赋值
+                        form.val("editForm", {
+                            "uno": data.uno,
+                            "uname": data.uname,
+                            "createrno": data.createrno,
+                            "realname": data.realname,
+                            "phone": data.phone,
+                            "birthday": dateFormat(data.birthday),
+                            "status": data.status,
+                        });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
+                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
+                    },
+                    end: function () {
+                        // 解决下拉框被隐藏（part2:恢复原样）
+                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
+                    }
+                });
+            }
+            if (event === 'del') {
+                layer.confirm("确认删除该用户吗？", {
+                    icon: 5,// 5-哭脸
+                    shadeClose: true,
+                    title: '提示'
+                }, function (index) {
+                    $.post(localUrl + '/user/remove.do', {
+                        uno: data.uno
+                    }, function (result) {
+                        layer.msg(result.msg);
+                        table.reload("dataTable");
+                        layer.close(index);
+                    });
+                });
+            }
+            if (event === 'resetPassword') {
+                var cssFlag = null;
+                var selector = '#resetPasswordForm';// 编辑弹窗选择
+                console.log("data.uname: " + data.uname);
+                layer.open({
+                    type: 1,
+                    resize: false,
+                    area: '400px',
+                    shadeClose: true,
+                    title: '修改密码',
+                    content: $(selector),
+                    success: function () {
+                        // 表单初始赋值
+                        form.val("resetPasswordForm", {
+                            "uname": data.uname,
+                            "newPassword1": null,
+                            "newPassword2": null
+                        });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
+                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
+                    },
+                    end: function () {
+                        // 解决下拉框被隐藏（part2:恢复原样）
+                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
+                    }
+                });
+            }
+        });
+
+        // 监听头部工具栏
+        // 新增表单弹窗
+        table.on('toolbar(dataTable)', function (obj) {
+            if (obj.event === 'add') {
+                var cssFlag = null;
+                var selector = '#saveForm';// 弹窗选择
+                layer.open({
+                    type: 1,
+                    resize: false,
+                    area: '400px',
+                    shadeClose: true,
+                    title: '新增',
+                    content: $(selector),
+                    success: function () {
+                        formSelects.render('saveRnoSelect', {
+                            height: "38px"
+                        });
+                        // 表单初始赋值
+                        form.val("editForm", {
+                            "uname": null,
+                            "password": null,
+                            "checkPassword": null,
+                            "realname": null,
+                            "phone": null,
+                            "birthday": null,
+                            "status": '0',
+                            "rno": null
+                        });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
+                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
+                    },
+                    end: function () {
+                        // 解决下拉框被隐藏（part2:恢复原样）
+                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
+                    }
+                });
+            }
+        });
+
+        // 监听编辑表单提交
+        form.on('submit(editFormSubmit)', function (data) {
+            $.post(localUrl + '/user/update.do', data.field, function (generalData) {
+                layer.msg(generalData.msg);
+                if (generalData.result) {
+                    table.reload('dataTable');
+                    layer.close((layer.index) - 1);
+                }
+            });
+            return false;//监听表单提交返回false用于阻止页面跳转
+        });
+
+        // 监听新增表单提交
+        form.on('submit(saveFormSubmit)', function (data) {
+            var password = data.field.password;
+            var checkPassword = data.field.checkPassword;
+            data.field.password = $.md5(password);
+            data.field.checkPassword = $.md5(checkPassword);
+            $.post(localUrl + '/user/save.do', data.field, function (generalData) {
+                layer.msg(generalData.msg);
+                if (generalData.result) {
+                    table.reload('dataTable');
+                    layer.close((layer.index) - 1);
+                }
+            });
+            return false;//监听表单提交返回false用于阻止页面跳转
+        });
+
+        // 监听新增表单提交
+        form.on('submit(resetPasswordFormSubmit)', function (data) {
+            $.post(localUrl + '/user/resetPassword.do', {
+                uname: data.field.uname,
+                newPassword1: $.md5(data.field.newPassword1),
+                newPassword2: $.md5(data.field.newPassword2)
+            }, function (generalData) {
+                layer.msg(generalData.msg);
+                form.val("resetPasswordForm", {
+                    "uname": data.field.uname,
+                    "newPassword1": null,
+                    "newPassword2": null
+                });
+            });
+            return false;
+        });
+
+        // 监听搜索表单提交
+        form.on('submit(searchFormSubmit)', function (data) {
+            table.reload("dataTable", {
+                where: data.field,
+                page: {
+                    curr: 1
+                    //重新从第 1 页开始
+                }
+            });
+            return false;//监听表单提交返回false用于阻止页面跳转
+        });
+    });
+</script>
+</html>

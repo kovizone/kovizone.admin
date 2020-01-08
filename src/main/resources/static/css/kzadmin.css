@@ -1,0 +1,61 @@
+/** 文件夹未展开 */
+.treeTable-icon .layui-icon-layer:before {
+    content: "";
+}
+
+/** 文件夹展开 */
+.treeTable-icon.open .layui-icon-layer:before {
+    content: "";
+}
+
+.kvadmin-search-form .layui-form-item {
+    margin-bottom: 0px;
+}
+
+.kvadmin-search-form .layui-form-item .layui-inline {
+    margin-bottom: 5px;
+    margin-right: 0;
+    height: 30px;
+}
+
+.kvadmin-search-form .layui-form-item .layui-form-label {
+    margin-bottom: 5px;
+    margin-right: 0;
+    height: 30px;
+    padding: 0px 15px;
+    line-height: 30px;
+}
+
+.container {
+}
+
+.left-nav {
+    box-shadow: 1px 5px 5px #cccccc;
+}
+
+blockquote .warning {
+    color: brown;
+    font-weight: bold;
+    padding-left: 5px;
+    padding-right: 5px;
+
+}
+
+/*必填项红色星星*/
+label.xrequired:before {
+    content: '* ';
+    color: red;
+}
+
+.div-right {
+    float: right
+}
+
+.div-scroll-hidden {
+    overflow: hidden;
+}
+
+/*input不换行*/
+td {
+    white-space: nowrap;
+}

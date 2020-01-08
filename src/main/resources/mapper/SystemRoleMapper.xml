@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kovizone.admin.mapper.SystemRoleMapper">
+
+	<resultMap id="SystemRoleResultMap" type="com.kovizone.admin.po.SystemRole">
+		<id property="rno" column="rno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="rname" column="rname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<select id="getByRno" resultMap="SystemRoleResultMap">
+		select * from system_role where rno=#{rno}
+	</select>
+
+	<select id="list" resultMap="SystemRoleResultMap">
+		select * from system_role
+		<trim prefix="where " suffixOverrides="and">
+			<if test="systemRole != null">
+				<if test="systemRole.rno != null">
+					rno=#{systemRole.rno} and
+				</if>
+				<if test="systemRole.rname != null">
+					rname like CONCAT('%',#{systemRole.rname},'%') and
+				</if>
+			</if>
+		</trim>
+		order by rno desc
+		<if test="startNum != null and startNum >= 0 and size != null and size != 0">
+			limit #{startNum},#{size}
+		</if>
+	</select>
+
+	<select id="count" resultType="java.lang.Integer" parameterType="com.kovizone.admin.po.SystemRole">
+		select count(1) from system_role
+		<trim prefix="where " suffixOverrides="and">
+			<if test="rno != null">
+				rno=#{rno} and
+			</if>
+			<if test="rname != null">
+				rname like CONCAT('%',#{rname},'%') and
+			</if>
+		</trim>
+	</select>
+
+	<insert id="save" parameterType="com.kovizone.admin.po.SystemRole" keyProperty="rno" useGeneratedKeys="true">
+		insert into system_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="rno != null">
+				rno,
+			</if>
+			<if test="rname != null">
+				rname,
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="rno != null">
+				#{rno},
+			</if>
+			<if test="rname != null">
+				#{rname},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.kovizone.admin.po.SystemRole">
+		update system_role set
+		<trim suffixOverrides=",">
+			<if test="rname != null">
+				rname=#{rname},
+			</if>
+		</trim>
+		where
+		<if test="rno != null">
+			rno=#{rno}
+		</if>
+	</update>
+
+	<delete id="remove">
+		delete from system_role where rno=#{rno};
+	</delete>
+
+	<select id="listByUno" resultMap="SystemRoleResultMap">
+		select * from system_role where rno in
+		(select rno from system_user where uno = #{uno})
+	</select>
+
+	<select id="listContainParentByRno" resultMap="SystemRoleResultMap">
+		select * from system_role where FIND_IN_SET(rno,getSystemRoleParList(#{rno}))
+	</select>
+
+</mapper>

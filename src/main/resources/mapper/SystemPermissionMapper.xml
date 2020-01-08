@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kovizone.admin.mapper.SystemPermissionMapper">
+
+	<resultMap id="SystemPermissionResultMap" type="com.kovizone.admin.po.SystemPermission">
+		<id property="pno" column="pno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="pname" column="pname" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="url" column="url" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="icon" column="icon" javaType="java.lang.String" jdbcType="VARCHAR"/>
+		<result property="show" column="show" javaType="java.lang.String" jdbcType="CHAR"/>
+		<result property="parentno" column="parentno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+	</resultMap>
+
+	<select id="list" resultMap="SystemPermissionResultMap">
+		select * from system_permission
+		<trim prefix="where " suffixOverrides="and">
+			<if test="systemPermission != null">
+				<if test="systemPermission.pno != null">
+					pno=#{systemPermission.pno} and
+				</if>
+				<if test="systemPermission.pname != null">
+					pname like CONCAT('%',#{systemPermission.pname},'%') and
+				</if>
+				<if test="systemPermission.url != null">
+					url=#{systemPermission.url} and
+				</if>
+				<if test="systemPermission.icon != null">
+					icon=#{systemPermission.icon} and
+				</if>
+				<if test="systemPermission.show != null">
+					`show`=#{systemPermission.show} and
+				</if>
+				<if test="systemPermission.parentno != null">
+					parentno=#{systemPermission.parentno} and
+				</if>
+			</if>
+		</trim>
+		order by pno
+		<if test="startNum != null and startNum >= 0 and size != null and size != 0">
+			limit #{startNum},#{size}
+		</if>
+	</select>
+
+	<select id="listUrl" resultType="java.lang.String">
+		select url from system_permission where url != '' and url is not null
+	</select>
+
+	<select id="count" resultType="java.lang.Integer" parameterType="com.kovizone.admin.po.SystemPermission">
+		select count(1) from system_permission
+		<trim prefix="where " suffixOverrides="and">
+			<if test="pno != null">
+				pno=#{pno} and
+			</if>
+			<if test="pname != null">
+				pname like CONCAT('%',#{pname},'%') and
+			</if>
+			<if test="url != null">
+				url=#{url} and
+			</if>
+			<if test="icon != null">
+				icon=#{icon} and
+			</if>
+			<if test="show != null">
+				`show`=#{show} and
+			</if>
+			<if test="parentno != null">
+				parentno=#{parentno} and
+			</if>
+		</trim>
+	</select>
+
+	<insert id="save" parameterType="com.kovizone.admin.po.SystemPermission" keyProperty="pno" useGeneratedKeys="true">
+		insert into system_permission
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="pno != null">
+				pno,
+			</if>
+			<if test="pname != null">
+				pname,
+			</if>
+			<if test="url != null">
+				url,
+			</if>
+			<if test="icon != null">
+				icon,
+			</if>
+			<if test="show != null">
+				`show`,
+			</if>
+			<if test="parentno != null">
+				parentno,
+			</if>
+		</trim>
+		<trim prefix="values(" suffix=")" suffixOverrides=",">
+			<if test="pno != null">
+				#{pno},
+			</if>
+			<if test="pname != null">
+				#{pname},
+			</if>
+			<if test="url != null">
+				#{url},
+			</if>
+			<if test="icon != null">
+				#{icon},
+			</if>
+			<if test="show != null">
+				#{show},
+			</if>
+			<if test="parentno != null">
+				#{parentno},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="com.kovizone.admin.po.SystemPermission">
+		update system_permission set
+		<trim suffixOverrides=",">
+			pname=#{pname},
+			url=#{url},
+			icon=#{icon},
+			`show`=#{show},
+			parentno=#{parentno},
+		</trim>
+		where pno=#{pno}
+	</update>
+
+	<delete id="remove">
+		delete from system_permission where pno=#{pno};
+	</delete>
+
+	<select id="listContainParentByRno" resultMap="SystemPermissionResultMap">
+		select * from system_permission where pno in
+		(select pno from system_role_permission where rno=#{rno})
+	</select>
+
+	<select id="listContainParentByUno" resultMap="SystemPermissionResultMap">
+		select * from system_permission where pno in
+		(select pno from system_role_permission where rno in (select rno from system_user_role where uno=#{uno}))
+	</select>
+
+	<select id="listContainParentByUname" resultMap="SystemPermissionResultMap">
+		select * from system_permission where pno in
+		(select pno from system_role_permission where rno in (select rno from system_user_role where rno in
+		(select rno from system_user_role where uno in (select uno from system_user where uname=#{uname}))
+		))
+	</select>
+
+	<select id="listByRnos" resultMap="SystemPermissionResultMap">
+		select * from system_permission where pno in
+		(select pno from system_role_permission where rno in
+		<foreach collection="array" item="rno" separator="," open="(" close=")">
+			#{rno}
+		</foreach>
+		)
+	</select>
+
+	<select id="listContainParentByPno" resultMap="SystemPermissionResultMap">
+		select * from system_permission where FIND_IN_SET(pno,getSystemPermissionParList(#{pno}))
+	</select>
+
+</mapper>

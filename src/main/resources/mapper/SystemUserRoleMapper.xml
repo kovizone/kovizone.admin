@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kovizone.admin.mapper.SystemUserRoleMapper">
+
+	<resultMap id="SystemUserRoleResultMap" type="com.kovizone.admin.po.SystemUserRole">
+		<id property="urno" column="urno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="uno" column="uno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+		<result property="rno" column="rno" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+	</resultMap>
+
+	<insert id="grant">
+		insert into system_user_role (uno,rno) values (#{uno},#{rno})
+	</insert>
+
+	<delete id="revoke">
+		delete from system_user_role where uno=#{uno} and rno=#{rno}
+	</delete>
+
+	<delete id="removeByUno">
+		delete from system_user_role where uno=#{uno};
+	</delete>
+
+	<delete id="removeByRno">
+		delete from system_user_role where rno=#{rno};
+	</delete>
+
+	<select id="list" resultMap="SystemUserRoleResultMap">
+		select * from system_user_role
+		<trim prefix="where " suffixOverrides="and">
+			<if test="urno != null">
+				urno=#{urno} and
+			</if>
+			<if test="uno != null">
+				uno=#{uno} and
+			</if>
+			<if test="rno != null">
+				rno=#{rno} and
+			</if>
+		</trim>
+	</select>
+
+</mapper>
