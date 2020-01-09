@@ -13,8 +13,6 @@ import com.kovizone.admin.vo.GeneralData;
 import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.constant.CodeConstant;
 import com.kovizone.admin.constant.MessageConstant;
-import com.kovizone.admin.constant.UrlConstant;
-import com.kovizone.admin.constant.ViewConstant;
 import com.kovizone.admin.po.SystemRole;
 import com.kovizone.admin.po.SystemRolePermission;
 import com.kovizone.admin.service.SystemRolePermissionService;
@@ -26,7 +24,7 @@ import java.util.List;
 
 /**
  * 用户角色控制
- * <P/>
+ * <p/>
  * URL字典
  * <TR>
  * <TD>/role/view.do</TD>
@@ -60,134 +58,134 @@ import java.util.List;
  * @author KoviChen
  * @version 0.0.1 2019-08-06 KoviChen 新建类
  */
-@RequestMapping(UrlConstant.ROLE)
+@RequestMapping("/role")
 @Controller
 public class RoleController {
 
-	private Logger logger = LoggerFactory.getLogger(RoleController.class);
+    private Logger logger = LoggerFactory.getLogger(RoleController.class);
 
-	private SystemRolePermissionService systemRolePermissionService;
+    private SystemRolePermissionService systemRolePermissionService;
 
-	private SystemRoleService systemRoleService;
+    private SystemRoleService systemRoleService;
 
-	@Autowired
-	public RoleController(SystemRolePermissionService systemRolePermissionService, SystemRoleService systemRoleService) {
-		this.systemRolePermissionService = systemRolePermissionService;
-		this.systemRoleService = systemRoleService;
-	}
+    @Autowired
+    public RoleController(SystemRolePermissionService systemRolePermissionService, SystemRoleService systemRoleService) {
+        this.systemRolePermissionService = systemRolePermissionService;
+        this.systemRoleService = systemRoleService;
+    }
 
-	@RequestMapping(UrlConstant.VIEW_DO)
-	public ModelAndView view() {
-		return new ModelAndView(ViewConstant.ROLE_VIEW);
-	}
+    @RequestMapping("/view.do")
+    public ModelAndView view() {
+        return new ModelAndView("system/role");
+    }
 
-	@PostMapping(UrlConstant.UPDATE_DO)
-	@ResponseBody
-	public GeneralData update(HttpServletRequest request) {
-		try {
-			SystemRole systemRole = DataUtils.request2Object(request, SystemRole.class);
-			int result = systemRoleService.update(systemRole);
-			if (result > 0) {
-				return new GeneralData(true, MessageConstant.UPDATE_SUCCESS);
-			}
-			return new GeneralData(false, MessageConstant.UPDATE_FAIL);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return new GeneralData(false, MessageConstant.EXCEPTION);
-		}
-	}
+    @PostMapping("/update.do")
+    @ResponseBody
+    public GeneralData update(HttpServletRequest request) {
+        try {
+            SystemRole systemRole = DataUtils.request2Object(request, SystemRole.class);
+            int result = systemRoleService.update(systemRole);
+            if (result > 0) {
+                return new GeneralData(true, MessageConstant.UPDATE_SUCCESS);
+            }
+            return new GeneralData(false, MessageConstant.UPDATE_FAIL);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new GeneralData(false, MessageConstant.EXCEPTION);
+        }
+    }
 
-	@RequestMapping(UrlConstant.LIST_DO)
-	@ResponseBody
-	public TableData<SystemRole> list(HttpServletRequest request) {
-		SystemRole systemRole = DataUtils.request2Object(request, SystemRole.class);
-		return systemRoleService.tableData(systemRole, 0, 0);
-	}
+    @RequestMapping("/list.do")
+    @ResponseBody
+    public TableData<SystemRole> list(HttpServletRequest request) {
+        SystemRole systemRole = DataUtils.request2Object(request, SystemRole.class);
+        return systemRoleService.tableData(systemRole, 0, 0);
+    }
 
-	@RequestMapping(UrlConstant.DETAIL_DO)
-	@ResponseBody
-	public GeneralData detail(HttpServletRequest request) {
-		try {
-			String rnoStr = request.getParameter("rno");
-			if (rnoStr == null || "".equals(rnoStr)) {
-				return new GeneralData(false, MessageConstant.QUERY_FAIL);
-			}
+    @RequestMapping("/detail.do")
+    @ResponseBody
+    public GeneralData detail(HttpServletRequest request) {
+        try {
+            String rnoStr = request.getParameter("rno");
+            if (rnoStr == null || "".equals(rnoStr)) {
+                return new GeneralData(false, MessageConstant.QUERY_FAIL);
+            }
 
-			SystemRolePermission systemRolePermission = new SystemRolePermission();
-			systemRolePermission.setRno(Integer.parseInt(rnoStr));
-			List<SystemRolePermission> systemRolePermissions = systemRolePermissionService.list(systemRolePermission);
-			StringBuilder pnoSb = new StringBuilder();
-			if (systemRolePermissions != null && !systemRolePermissions.isEmpty()) {
-				for (int i = 0; i < systemRolePermissions.size(); i++) {
-					SystemRolePermission spr = systemRolePermissions.get(i);
-					if (i != 0) {
-						pnoSb.append(",");
-					}
-					pnoSb.append(spr.getPno());
-				}
-			}
+            SystemRolePermission systemRolePermission = new SystemRolePermission();
+            systemRolePermission.setRno(Integer.parseInt(rnoStr));
+            List<SystemRolePermission> systemRolePermissions = systemRolePermissionService.list(systemRolePermission);
+            StringBuilder pnoSb = new StringBuilder();
+            if (systemRolePermissions != null && !systemRolePermissions.isEmpty()) {
+                for (int i = 0; i < systemRolePermissions.size(); i++) {
+                    SystemRolePermission spr = systemRolePermissions.get(i);
+                    if (i != 0) {
+                        pnoSb.append(",");
+                    }
+                    pnoSb.append(spr.getPno());
+                }
+            }
 
-			// SystemRole systemRole = systemRoleService.getByRno(Integer.parseInt(rnoStr));
+            // SystemRole systemRole = systemRoleService.getByRno(Integer.parseInt(rnoStr));
 
-			GeneralData generalData = new GeneralData(true, MessageConstant.QUERY_SUCCESS);
-			generalData.addMap("pnoList", pnoSb.toString());
-			return generalData;
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return new GeneralData(false, MessageConstant.EXCEPTION);
-		}
-	}
+            GeneralData generalData = new GeneralData(true, MessageConstant.QUERY_SUCCESS);
+            generalData.addMap("pnoList", pnoSb.toString());
+            return generalData;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new GeneralData(false, MessageConstant.EXCEPTION);
+        }
+    }
 
-	@PostMapping(UrlConstant.SAVE_DO)
-	@ResponseBody
-	public GeneralData save(HttpServletRequest request) {
-		SystemRole systemRole = DataUtils.request2Object(request, SystemRole.class);
-		if (systemRoleService.save(systemRole) > 0) {
-			return new GeneralData(true, MessageConstant.SAVE_SUCCESS);
-		}
-		return new GeneralData(false, MessageConstant.SAVE_FAIL);
-	}
+    @PostMapping("/save.do")
+    @ResponseBody
+    public GeneralData save(HttpServletRequest request) {
+        SystemRole systemRole = DataUtils.request2Object(request, SystemRole.class);
+        if (systemRoleService.save(systemRole) > 0) {
+            return new GeneralData(true, MessageConstant.SAVE_SUCCESS);
+        }
+        return new GeneralData(false, MessageConstant.SAVE_FAIL);
+    }
 
-	@PostMapping("/setPermission.do")
-	@ResponseBody
-	public GeneralData setPermission(HttpServletRequest request) {
-		String rnoStr = request.getParameter("rno");
-		if (rnoStr == null || "".equals(rnoStr)) {
-			return new GeneralData(false, MessageConstant.GRANT_FAIL);
-		}
-		String pnoListStr = request.getParameter("pnoList");
-		Integer[] pnos = null;
-		if (pnoListStr != null && !"".equals(pnoListStr)) {
-			String[] pnoList = pnoListStr.split(",");
-			if (pnoList.length > 0) {
-				pnos = new Integer[pnoList.length];
-				for (int i = 0; i < pnoList.length; i++) {
-					pnos[i] = Integer.parseInt(pnoList[i]);
-				}
-			}
-		}
-		if (systemRolePermissionService.grant(Integer.parseInt(rnoStr), pnos) > 0) {
-			return new GeneralData(true, MessageConstant.GRANT_SUCCESS);
-		}
-		return new GeneralData(false, MessageConstant.GRANT_FAIL);
-	}
+    @PostMapping("/setPermission.do")
+    @ResponseBody
+    public GeneralData setPermission(HttpServletRequest request) {
+        String rnoStr = request.getParameter("rno");
+        if (rnoStr == null || "".equals(rnoStr)) {
+            return new GeneralData(false, MessageConstant.GRANT_FAIL);
+        }
+        String pnoListStr = request.getParameter("pnoList");
+        Integer[] pnos = null;
+        if (pnoListStr != null && !"".equals(pnoListStr)) {
+            String[] pnoList = pnoListStr.split(",");
+            if (pnoList.length > 0) {
+                pnos = new Integer[pnoList.length];
+                for (int i = 0; i < pnoList.length; i++) {
+                    pnos[i] = Integer.parseInt(pnoList[i]);
+                }
+            }
+        }
+        if (systemRolePermissionService.grant(Integer.parseInt(rnoStr), pnos) > 0) {
+            return new GeneralData(true, MessageConstant.GRANT_SUCCESS);
+        }
+        return new GeneralData(false, MessageConstant.GRANT_FAIL);
+    }
 
-	@PostMapping(UrlConstant.REMOVE_DO)
-	@ResponseBody
-	public GeneralData remove(HttpServletRequest request) {
-		try {
-			int rno = Integer.parseInt(request.getParameter("rno"));
-			int result = systemRoleService.remove(rno);
-			if (result > 0) {
-				return new GeneralData(false, MessageConstant.REMOVE_SUCCESS);
-			}
-			if (result == CodeConstant.ROLE_NOT_FOUND) {
-				return new GeneralData(false, MessageConstant.ROLE_CLEAR);
-			}
-			return new GeneralData(false, MessageConstant.REMOVE_FAIL + "（" + result + "）");
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return new GeneralData(false, e.getMessage());
-		}
-	}
+    @PostMapping("/remove.do")
+    @ResponseBody
+    public GeneralData remove(HttpServletRequest request) {
+        try {
+            int rno = Integer.parseInt(request.getParameter("rno"));
+            int result = systemRoleService.remove(rno);
+            if (result > 0) {
+                return new GeneralData(false, MessageConstant.REMOVE_SUCCESS);
+            }
+            if (result == CodeConstant.ROLE_NOT_FOUND) {
+                return new GeneralData(false, MessageConstant.ROLE_CLEAR);
+            }
+            return new GeneralData(false, MessageConstant.REMOVE_FAIL + "（" + result + "）");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new GeneralData(false, e.getMessage());
+        }
+    }
 }

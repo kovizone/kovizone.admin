@@ -24,9 +24,9 @@ import java.net.URLEncoder;
  * @author KoviChen
  * @version 0.0.1 2019-08-12 KoviChen 新建类
  */
-public class PermsFilter extends PermissionsAuthorizationFilter {
+public class PermissionsFilter extends PermissionsAuthorizationFilter {
 
-    private Logger logger = LoggerFactory.getLogger(PermsFilter.class);
+    private Logger logger = LoggerFactory.getLogger(PermissionsFilter.class);
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {

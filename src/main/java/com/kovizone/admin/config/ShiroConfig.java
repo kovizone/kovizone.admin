@@ -3,8 +3,7 @@ package com.kovizone.admin.config;
 import com.kovizone.admin.anno.PermissionScanIgnore;
 import com.kovizone.admin.registrar.PermissionScanRegistrar;
 import com.kovizone.admin.constant.ShiroFilterConstant;
-import com.kovizone.admin.constant.UrlConstant;
-import com.kovizone.admin.filter.PermsFilter;
+import com.kovizone.admin.filter.PermissionsFilter;
 import com.kovizone.admin.mapper.SystemPermissionMapper;
 import com.kovizone.admin.util.StringUtils;
 import org.apache.shiro.mgt.SecurityManager;
@@ -210,11 +209,11 @@ public class ShiroConfig {
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        shiroFilterFactoryBean.setLoginUrl(UrlConstant.LOGIN_DO);
-        shiroFilterFactoryBean.setUnauthorizedUrl(UrlConstant.ERROR_DO);
+        shiroFilterFactoryBean.setLoginUrl("/login.do");
+        shiroFilterFactoryBean.setUnauthorizedUrl("/error.do");
 
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
-        filters.put(ShiroFilterConstant.PERMS, new PermsFilter());
+        filters.put(ShiroFilterConstant.PERMS, new PermissionsFilter());
         shiroFilterFactoryBean.setFilters(filters);
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap());

@@ -109,15 +109,15 @@ public class UserController {
         return new GeneralData(true, MessageConstant.LOGIN_SUCCESS);
     }
 
-    @RequestMapping(UrlConstant.VIEW_DO)
+    @RequestMapping("/view.do")
     public ModelAndView view() {
-        ModelAndView mv = new ModelAndView(ViewConstant.USER_VIEW);
+        ModelAndView mv = new ModelAndView("system/user");
         List<?> systemRoleList = systemRoleService.tableData(null, 0, 0).getData();
         mv.addObject("systemRoleList", systemRoleList);
         return mv;
     }
 
-    @PostMapping(UrlConstant.SAVE_DO)
+    @PostMapping("/save.do")
     @ResponseBody
     public GeneralData save(HttpServletRequest request) {
         try {
@@ -155,7 +155,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(UrlConstant.UPDATE_DO)
+    @PostMapping("/update.do")
     @ResponseBody
     public GeneralData update(HttpServletRequest request) {
         try {

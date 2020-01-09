@@ -3,7 +3,6 @@ package com.kovizone.admin.controller.system;
 import com.kovizone.admin.anno.PermissionScanIgnore;
 import com.kovizone.admin.vo.GeneralData;
 import com.kovizone.admin.vo.TableData;
-import com.kovizone.admin.constant.UrlConstant;
 import com.kovizone.admin.po.SystemRole;
 import com.kovizone.admin.service.SystemRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 初始化控制
- * <P/>
+ * <p/>
  * URL字典
  * <TR>
  * <TD>/init/systemRoleList.do</TD>
@@ -24,28 +23,28 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @PermissionScanIgnore
 @RestController
-@RequestMapping(UrlConstant.INIT)
+@RequestMapping("/init")
 public class InitController {
 
-	private SystemRoleService systemRoleService;
+    private SystemRoleService systemRoleService;
 
 
-	@Autowired
-	public InitController(SystemRoleService systemRoleService) {
-		this.systemRoleService = systemRoleService;
-	}
+    @Autowired
+    public InitController(SystemRoleService systemRoleService) {
+        this.systemRoleService = systemRoleService;
+    }
 
-	/**
-	 * 获取系统角色集合
-	 * 
-	 * @return 通用数据
-	 */
-	@RequestMapping("/systemRoleList.do")
-	public GeneralData systemRoleList() {
-		TableData<SystemRole> systemRoleList = systemRoleService.tableData(null, 0, 0);
-		GeneralData generalData = new GeneralData(true, "");
-		generalData.setList(systemRoleList.getData());
-		return generalData;
-	}
+    /**
+     * 获取系统角色集合
+     *
+     * @return 通用数据
+     */
+    @RequestMapping("/systemRoleList.do")
+    public GeneralData systemRoleList() {
+        TableData<SystemRole> systemRoleList = systemRoleService.tableData(null, 0, 0);
+        GeneralData generalData = new GeneralData(true, "");
+        generalData.setList(systemRoleList.getData());
+        return generalData;
+    }
 
 }

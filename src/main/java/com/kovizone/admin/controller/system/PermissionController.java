@@ -6,7 +6,6 @@ import com.kovizone.admin.vo.GeneralData;
 import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.constant.CodeConstant;
 import com.kovizone.admin.constant.MessageConstant;
-import com.kovizone.admin.constant.ViewConstant;
 import com.kovizone.admin.po.SystemPermission;
 import com.kovizone.admin.po.SystemRole;
 import com.kovizone.admin.service.SystemPermissionService;
@@ -21,11 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kovizone.admin.constant.UrlConstant;
-
 /**
  * 权限控制
- * <P/>
+ * <p/>
  * URL字典
  * <TR>
  * <TD>/permission/view.do</TD>
@@ -51,79 +48,79 @@ import com.kovizone.admin.constant.UrlConstant;
  * @author KoviChen
  * @version 0.0.1 2019-08-06 新建类
  */
-@RequestMapping(UrlConstant.PERMISSION)
+@RequestMapping("/permission")
 @Controller
 public class PermissionController {
 
-	private Logger logger = LoggerFactory.getLogger(UserController.class);
+    private Logger logger = LoggerFactory.getLogger(UserController.class);
 
-	private SystemPermissionService systemPermissionService;
+    private SystemPermissionService systemPermissionService;
 
-	private SystemRoleService systemRoleService;
+    private SystemRoleService systemRoleService;
 
-	@Autowired
-	public PermissionController(SystemPermissionService systemPermissionService, SystemRoleService systemRoleService) {
-		this.systemPermissionService = systemPermissionService;
-		this.systemRoleService = systemRoleService;
-	}
+    @Autowired
+    public PermissionController(SystemPermissionService systemPermissionService, SystemRoleService systemRoleService) {
+        this.systemPermissionService = systemPermissionService;
+        this.systemRoleService = systemRoleService;
+    }
 
-	@RequestMapping(UrlConstant.VIEW_DO)
-	public ModelAndView view() {
-		ModelAndView mv = new ModelAndView(ViewConstant.PERMISSION_VIEW);
-		TableData<SystemRole> systemRoleList = systemRoleService.tableData(null, 0, 0);
-		mv.addObject("systemRoleList", systemRoleList.getData());
-		return mv;
-	}
+    @RequestMapping("/view.do")
+    public ModelAndView view() {
+        ModelAndView mv = new ModelAndView("system/permission");
+        TableData<SystemRole> systemRoleList = systemRoleService.tableData(null, 0, 0);
+        mv.addObject("systemRoleList", systemRoleList.getData());
+        return mv;
+    }
 
-	@PostMapping(UrlConstant.SAVE_DO)
-	@ResponseBody
-	public GeneralData save(HttpServletRequest request) {
-		SystemPermission systemPermission = DataUtils.request2Object(request, SystemPermission.class);
-		if (systemPermissionService.save(systemPermission) > 0) {
-			return new GeneralData(true, MessageConstant.SAVE_SUCCESS);
-		}
-		return new GeneralData(false, MessageConstant.SAVE_FAIL);
-	}
+    @PostMapping("/save.do")
+    @ResponseBody
+    public GeneralData save(HttpServletRequest request) {
+        SystemPermission systemPermission = DataUtils.request2Object(request, SystemPermission.class);
+        if (systemPermissionService.save(systemPermission) > 0) {
+            return new GeneralData(true, MessageConstant.SAVE_SUCCESS);
+        }
+        return new GeneralData(false, MessageConstant.SAVE_FAIL);
+    }
 
-	@PostMapping(UrlConstant.UPDATE_DO)
-	@ResponseBody
-	public GeneralData update(HttpServletRequest request) {
-		try {
-			SystemPermission systemPermission = DataUtils.request2Object(request, SystemPermission.class);
+    @PostMapping("/update.do")
+    @ResponseBody
+    public GeneralData update(HttpServletRequest request) {
+        try {
+            SystemPermission systemPermission = DataUtils.request2Object(request, SystemPermission.class);
 
-			if (systemPermissionService.update(systemPermission) > 0) {
-				return new GeneralData(true, MessageConstant.UPDATE_SUCCESS);
-			}
-			return new GeneralData(false, MessageConstant.UPDATE_FAIL);
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return new GeneralData(false, MessageConstant.EXCEPTION);
-		}
-	}
+            if (systemPermissionService.update(systemPermission) > 0) {
+                return new GeneralData(true, MessageConstant.UPDATE_SUCCESS);
+            }
+            return new GeneralData(false, MessageConstant.UPDATE_FAIL);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new GeneralData(false, MessageConstant.EXCEPTION);
+        }
+    }
 
-	@RequestMapping(UrlConstant.LIST_DO)
-	@ResponseBody
-	public TableData<SystemPermission> list(HttpServletRequest request) {
-		SystemPermission systemPermission = DataUtils.request2Object(request, SystemPermission.class);
-		return systemPermissionService.tableData(systemPermission, 0, 0);
-	}
+    @RequestMapping("/list.do")
+    @ResponseBody
+    public TableData<SystemPermission> list(HttpServletRequest request) {
+        SystemPermission systemPermission = DataUtils.request2Object(request, SystemPermission.class);
+        return systemPermissionService.tableData(systemPermission, 0, 0);
+    }
 
-	@PostMapping(UrlConstant.REMOVE_DO)
-	@ResponseBody
-	public GeneralData remove(HttpServletRequest request) {
-		try {
-			int pno = Integer.parseInt(request.getParameter("pno"));
-			int result = systemPermissionService.remove(pno);
-			if (result > 0) {
-				return new GeneralData(true, MessageConstant.REMOVE_SUCCESS);
-			}
-			if (result == CodeConstant.BYPASS_THE_IMMEDIATE_LEADERSHIP) {
-				return new GeneralData(false, MessageConstant.PERMISSION_CLEAR);
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			return new GeneralData(false, e.getMessage());
-		}
-		return new GeneralData(false, MessageConstant.REMOVE_FAIL);
-	}
+    @PostMapping("/remove.do")
+    @ResponseBody
+    public GeneralData remove(HttpServletRequest request) {
+        try {
+            int pno = Integer.parseInt(request.getParameter("pno"));
+            int result = systemPermissionService.remove(pno);
+            if (result > 0) {
+                return new GeneralData(true, MessageConstant.REMOVE_SUCCESS);
+            }
+            if (result == CodeConstant.BYPASS_THE_IMMEDIATE_LEADERSHIP) {
+                return new GeneralData(false, MessageConstant.PERMISSION_CLEAR);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new GeneralData(false, e.getMessage());
+        }
+        return new GeneralData(false, MessageConstant.REMOVE_FAIL);
+    }
 }

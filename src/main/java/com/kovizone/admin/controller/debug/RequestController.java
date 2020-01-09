@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kovizone.admin.constant.UrlConstant;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,12 +32,12 @@ import javax.servlet.http.HttpServletResponse;
  * @version 0.0.1 2019-08-16 KoviChen 新建类
  */
 @Controller
-@RequestMapping(UrlConstant.REQUEST)
+@RequestMapping("/request")
 public class RequestController {
 
 	private Logger logger = LoggerFactory.getLogger(RequestController.class);
 
-	@RequestMapping(UrlConstant.VIEW_DO)
+	@RequestMapping("/view.do")
 	public ModelAndView view() {
 		return new ModelAndView("debug/request");
 	}

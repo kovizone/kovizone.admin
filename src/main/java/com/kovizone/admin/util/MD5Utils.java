@@ -2,7 +2,6 @@ package com.kovizone.admin.util;
 
 import java.io.UnsupportedEncodingException;
 
-import com.kovizone.admin.constant.CharacterConstant;
 import org.springframework.util.DigestUtils;
 
 /**
@@ -14,7 +13,7 @@ import org.springframework.util.DigestUtils;
  */
 public class MD5Utils {
 
-	private static final String CHARSET_NAME = CharacterConstant.CHARSET_NAME;
+	private static final String CHARSET_NAME = "UTF-8";
 
 	public static String encode(byte[] bytes) {
 		return DigestUtils.md5DigestAsHex(bytes).toUpperCase();

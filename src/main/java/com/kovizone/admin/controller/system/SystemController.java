@@ -7,7 +7,6 @@ import javax.servlet.http.HttpSession;
 
 import com.kovizone.admin.constant.LayuiIconConstatnt;
 import com.kovizone.admin.constant.ParameterConstant;
-import com.kovizone.admin.constant.ViewConstant;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import com.kovizone.admin.vo.GeneralData;
 import com.kovizone.admin.vo.Menu;
 import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.constant.MessageConstant;
-import com.kovizone.admin.constant.UrlConstant;
 import com.kovizone.admin.po.SystemPermission;
 import com.kovizone.admin.service.SystemPermissionService;
 import com.kovizone.admin.service.SystemUserService;
@@ -142,7 +140,7 @@ public class SystemController {
             }
         }
 
-        ModelAndView mv = new ModelAndView(ViewConstant.ERROR);
+        ModelAndView mv = new ModelAndView("error");
         mv.addObject(ParameterConstant.MESSAGE, message);
         mv.addObject(ParameterConstant.ICON, icon);
         mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
@@ -180,7 +178,7 @@ public class SystemController {
     @PermissionScanIgnore(loginRequired = false)
     @RequestMapping("/login.do")
     public ModelAndView login(HttpServletRequest request) {
-        ModelAndView mv = new ModelAndView(ViewConstant.LOGIN);
+        ModelAndView mv = new ModelAndView("login");
         mv.addObject(ParameterConstant.MESSAGE, request.getParameter("message"));
         mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
         mv.addObject(ParameterConstant.HTML_HEAD_NAME, htmlHeaderName);
@@ -188,16 +186,16 @@ public class SystemController {
     }
 
     @PermissionScanIgnore(loginRequired = false)
-    @RequestMapping(UrlConstant.LOGOUT_DO)
-    public ModelAndView logout() {
+    @RequestMapping("/logout.do")
+    public ModelAndView logout(HttpServletRequest request) {
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
-        return new ModelAndView("redirect:" + UrlConstant.LOGIN_DO);
+        return new ModelAndView("redirect:" + request.getContextPath() + "/login.do");
     }
 
     @PermissionScanIgnore
-    @RequestMapping(UrlConstant.WELCOME_DO)
+    @RequestMapping("/welcome.do")
     public ModelAndView welcome() {
-        return new ModelAndView(ViewConstant.WELCOME_VIEW);
+        return new ModelAndView("welcome");
     }
 }
