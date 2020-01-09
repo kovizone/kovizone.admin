@@ -11,6 +11,7 @@ import com.kovizone.admin.constant.ViewConstant;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -63,7 +64,11 @@ import com.kovizone.admin.util.DataUtils;
 @Controller
 public class SystemController {
 
-    private static final String UPDATE_PERMISSION = "updatePermission";
+    @Value("${html.title}")
+    private String htmlTitle;
+
+    @Value("${html.header.name}")
+    private String htmlHeaderName;
 
     private SystemPermissionService systemPermissionService;
 
@@ -102,6 +107,8 @@ public class SystemController {
         mv.addObject("testMode", "true");
         mv.addObject("systemUser", systemUserService.getByUname(String.valueOf(subject.getPrincipal())));
         mv.addObject("maxInactiveInterval", request.getSession(false).getMaxInactiveInterval());
+        mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
+        mv.addObject(ParameterConstant.HTML_HEAD_NAME, htmlHeaderName);
         return mv;
     }
 
@@ -138,6 +145,7 @@ public class SystemController {
         ModelAndView mv = new ModelAndView(ViewConstant.ERROR);
         mv.addObject(ParameterConstant.MESSAGE, message);
         mv.addObject(ParameterConstant.ICON, icon);
+        mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
         return mv;
     }
 
@@ -154,7 +162,7 @@ public class SystemController {
             systemPermissions = systemPermissionService.listContainParentByUname(String.valueOf(subject.getPrincipal()));
         }
 
-        if (UPDATE_PERMISSION.equals(type)) {
+        if ("updatePermission".equals(type)) {
             TableData<SystemPermission> tableData = systemPermissionService.tableData(null, 0, 0);
             if (tableData == null || tableData.getData() == null || tableData.getData().isEmpty()) {
                 return new Menu();
@@ -174,6 +182,8 @@ public class SystemController {
     public ModelAndView login(HttpServletRequest request) {
         ModelAndView mv = new ModelAndView(ViewConstant.LOGIN);
         mv.addObject(ParameterConstant.MESSAGE, request.getParameter("message"));
+        mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
+        mv.addObject(ParameterConstant.HTML_HEAD_NAME, htmlHeaderName);
         return mv;
     }
 

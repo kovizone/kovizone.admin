@@ -24,4 +24,8 @@ public class ParameterConstant {
 
 	public static final String GUEST = "guest";
 
+	public static final String HTML_TITLE = "htmlTitle";
+
+	public static final String HTML_HEAD_NAME = "htmlHeadName";
+
 }
