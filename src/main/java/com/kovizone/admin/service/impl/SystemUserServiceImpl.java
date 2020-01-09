@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.po.SystemUser;
 import com.kovizone.admin.util.DataUtils;
 

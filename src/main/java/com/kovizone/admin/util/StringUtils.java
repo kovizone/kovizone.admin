@@ -29,26 +29,55 @@ public class StringUtils extends org.springframework.util.StringUtils {
 
     public static final String SYMBOL_MINUS = "-";
 
+    private static final String TAB = "\t";
+
+    private static final int TAB_WIDTH = 4;
+
+    public static void main(String[] args) {
+        int maxTabSize = 7;
+        System.out.println(smartTab("", maxTabSize));
+        System.out.println(smartTab("1", maxTabSize));
+        System.out.println(smartTab("12", maxTabSize));
+        System.out.println(smartTab("123", maxTabSize));
+        System.out.println(smartTab("12345", maxTabSize));
+        System.out.println(smartTab("123456", maxTabSize));
+        System.out.println(smartTab("1234567", maxTabSize));
+        System.out.println(smartTab("12345678", maxTabSize));
+        System.out.println(smartTab("123456789", maxTabSize));
+        System.out.println(smartTab("1234567890", maxTabSize));
+        System.out.println(smartTab("12345678901", maxTabSize));
+        System.out.println(smartTab("123456789012", maxTabSize));
+        System.out.println(smartTab("1234567890123", maxTabSize));
+        System.out.println(smartTab("12345678901234", maxTabSize));
+        System.out.println(smartTab("123456789012345", maxTabSize));
+        System.out.println(smartTab("1234567890123456", maxTabSize));
+        System.out.println(smartTab("12345678901234567", maxTabSize));
+        System.out.println(smartTab("123456789012345678", maxTabSize));
+        System.out.println(smartTab("1234567890123456789", maxTabSize));
+        System.out.println(smartTab("12345678901234567890", maxTabSize));
+        System.out.println(smartTab("123456789012345678901", maxTabSize));
+    }
 
     /**
-     * 如果参数为正数将转为负数,为正则相反
+     * 自动添加tab
      *
-     * @param integer 数值
-     * @return 转换后的数值
+     * @param arg        原字符串
+     * @param maxTabSize tab上限
+     * @return 新字符串
      */
-    public static Integer minusAndplusConversion(Integer integer) {
-        if (isEmpty(integer)) {
-            return null;
-        }
-        String intStr = integer + "";
-        String substring = intStr.substring(0, 1);
-        if (SYMBOL_MINUS.equals(substring)) {
-            intStr = intStr.replace(SYMBOL_MINUS, "");
-            return new Integer(intStr);
-        } else {
-            intStr = SYMBOL_MINUS + intStr;
-            return new Integer(intStr);
-        }
+    public static String smartTab(String arg, int maxTabSize) {
+        return (arg == null ? "" : arg) +
+                buildTab(maxTabSize - ((StringUtils.isEmpty(arg) ? 0 : arg.length()) / TAB_WIDTH));
+    }
+
+    /**
+     * 生成指定数量的tab
+     *
+     * @param size 数量
+     * @return tab字符串
+     */
+    public static String buildTab(int size) {
+        return size <= 0 ? "" : (TAB + buildTab(--size));
     }
 
     /**
@@ -57,12 +86,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
      * @param str 字符串
      * @return true:为空或是null值  false: 不为空和null
      */
-    public static boolean isEmpty(String str){
+    public static boolean isEmpty(String str) {
         return !(str != null && !"".equals(str.trim()));
-    }
-
-    public static void main(String[] args) {
-        System.out.println(isEmpty("安抚"));
     }
 
     /**

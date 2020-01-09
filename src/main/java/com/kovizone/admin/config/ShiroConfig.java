@@ -1,11 +1,12 @@
 package com.kovizone.admin.config;
 
 import com.kovizone.admin.anno.PermissionScanIgnore;
+import com.kovizone.admin.anno.PermissionScanRegistrar;
 import com.kovizone.admin.constant.ShiroFilterConstant;
 import com.kovizone.admin.constant.UrlConstant;
-import com.kovizone.admin.filter.PermsOnAccessDeniedFilter;
+import com.kovizone.admin.filter.PermsFilter;
 import com.kovizone.admin.mapper.SystemPermissionMapper;
-import com.kovizone.admin.realm.CustomRealm;
+import com.kovizone.admin.util.StringUtils;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -23,10 +24,8 @@ import com.kovizone.admin.util.PackageUtil;
 
 import javax.servlet.Filter;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.Permission;
+import java.util.*;
 
 /**
  * Shiro配置
@@ -39,14 +38,14 @@ public class ShiroConfig {
 
     private Logger logger = LoggerFactory.getLogger(ShiroConfig.class);
 
-    @Value("${controller-scan}")
-    private String controllerScan;
-
     private SystemPermissionMapper systemPermissionMapper;
 
+    private CustomRealm customRealm;
+
     @Autowired(required = false)
-    public void setSystemPermissionMapper(SystemPermissionMapper systemPermissionMapper) {
+    public ShiroConfig(SystemPermissionMapper systemPermissionMapper, CustomRealm customRealm) {
         this.systemPermissionMapper = systemPermissionMapper;
+        this.customRealm = customRealm;
     }
 
     /**
@@ -57,9 +56,14 @@ public class ShiroConfig {
      * @param mappings                 映射地址集
      * @param unrealizedUrlList        未实现地址权限
      * @param notRegisterUrlList       未注册地址权限
+     * @param filter                   权限过滤标识
      */
-    private void permissionScanMapping(Map<String, String> filterChainDefinitionMap, String parentUrl, String[] mappings,
-                                       List<String> unrealizedUrlList, List<String> notRegisterUrlList) {
+    private void permissionScanMapping(Map<String, String> filterChainDefinitionMap,
+                                       String parentUrl,
+                                       String[] mappings,
+                                       List<String> unrealizedUrlList,
+                                       List<String> notRegisterUrlList,
+                                       String filter) {
         for (String mapping : mappings) {
             if (mapping != null && !"".equals(mapping)) {
                 String url = parentUrl + mapping;
@@ -68,7 +72,7 @@ public class ShiroConfig {
                 } else {
                     unrealizedUrlList.remove(url);
                 }
-                filterChainDefinitionMap.put(url, ShiroFilterConstant.PERMS + "[" + url + "]");
+                filterChainDefinitionMap.put(url, filter.replace("#url", url));
             }
         }
 
@@ -82,12 +86,20 @@ public class ShiroConfig {
      * @param methods                  方法集
      * @param unrealizedUrlList        未实现地址权限
      * @param notRegisterUrlList       未注册地址权限
+     * @param filter                   权限过滤标识
      */
-    private void permissionScanMethod(Map<String, String> filterChainDefinitionMap, String parentUrl, Method[] methods,
-                                      List<String> unrealizedUrlList, List<String> notRegisterUrlList) {
+    private void permissionScanMethod(Map<String, String> filterChainDefinitionMap,
+                                      String parentUrl,
+                                      Method[] methods,
+                                      List<String> unrealizedUrlList,
+                                      List<String> notRegisterUrlList,
+                                      String filter) {
         for (Method method : methods) {
             if (method.isAnnotationPresent(PermissionScanIgnore.class)) {
-                continue;
+                if (method.getAnnotation(PermissionScanIgnore.class).loginRequired()) {
+                    continue;
+                }
+                filter = ShiroFilterConstant.ANON;
             }
             String[] mappings = null;
             if (method.isAnnotationPresent(RequestMapping.class)) {
@@ -98,7 +110,7 @@ public class ShiroConfig {
                 mappings = method.getAnnotation(GetMapping.class).value();
             }
             if (mappings != null) {
-                permissionScanMapping(filterChainDefinitionMap, parentUrl, mappings, unrealizedUrlList, notRegisterUrlList);
+                permissionScanMapping(filterChainDefinitionMap, parentUrl, mappings, unrealizedUrlList, notRegisterUrlList, filter);
             }
         }
     }
@@ -114,22 +126,39 @@ public class ShiroConfig {
         List<String> notRegisterUrlList = new ArrayList<>();
 
         // 遍历控制层，生成权限（URL即为权限）
-        List<String> classNames = PackageUtil.getClassName(controllerScan, true);
-        if (classNames != null) {
-            for (String className : classNames) {
-                try {
-                    Class<?> clazz = Class.forName(className);
-                    if (clazz.isAnnotationPresent(PermissionScanIgnore.class)) {
-                        continue;
+        String[] permissionScans = PermissionScanRegistrar.getPermissionScans();
+        if (permissionScans == null) {
+            throw new IllegalArgumentException("At least one base package must be specified");
+        }
+        for (String permissionScan : permissionScans) {
+            List<String> classNames = PackageUtil.getClassName(permissionScan, false);
+            if (classNames != null) {
+                for (String className : classNames) {
+                    try {
+                        Class<?> clazz = Class.forName(className);
+                        String filter = ShiroFilterConstant.PERMS + "[#url]";
+                        if (clazz.isAnnotationPresent(PermissionScanIgnore.class)) {
+                            PermissionScanIgnore permissionScanIgnore = clazz.getAnnotation(PermissionScanIgnore.class);
+                            if (permissionScanIgnore.loginRequired()) {
+                                continue;
+                            }
+                            filter = ShiroFilterConstant.ANON;
+                        }
+                        String parentUrl = "";
+                        if (clazz.isAnnotationPresent(RequestMapping.class)) {
+                            parentUrl = clazz.getAnnotation(RequestMapping.class).value()[0];
+                        }
+                        permissionScanMethod(filterChainDefinitionMap,
+                                parentUrl,
+                                clazz.getMethods(),
+                                unrealizedUrlList,
+                                notRegisterUrlList,
+                                filter);
+
+                    } catch (ClassNotFoundException e) {
+                        logger.error(e.getMessage(), e);
+                        return;
                     }
-                    String parentUrl = "";
-                    if (clazz.isAnnotationPresent(RequestMapping.class)) {
-                        parentUrl = clazz.getAnnotation(RequestMapping.class).value()[0];
-                    }
-                    permissionScanMethod(filterChainDefinitionMap, parentUrl, clazz.getMethods(), unrealizedUrlList, notRegisterUrlList);
-                } catch (ClassNotFoundException e) {
-                    logger.error(e.getMessage(), e);
-                    return;
                 }
             }
         }
@@ -153,12 +182,12 @@ public class ShiroConfig {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 
         // 所有用户允许的地址
-        filterChainDefinitionMap.put(UrlConstant.LOGIN_DO, ShiroFilterConstant.ANON);
-        filterChainDefinitionMap.put(UrlConstant.USER + UrlConstant.LOGIN_DO, ShiroFilterConstant.ANON);
-        filterChainDefinitionMap.put(UrlConstant.MENU_DO, ShiroFilterConstant.ANON);
-        filterChainDefinitionMap.put(UrlConstant.ERROR_DO, ShiroFilterConstant.ANON);
-        filterChainDefinitionMap.put(UrlConstant.GENERAL_DATA_DO, ShiroFilterConstant.ANON);
-        filterChainDefinitionMap.put(UrlConstant.SESSIONLESS_DO, ShiroFilterConstant.ANON);
+        //filterChainDefinitionMap.put(UrlConstant.LOGIN_DO, ShiroFilterConstant.ANON);
+        //filterChainDefinitionMap.put(UrlConstant.USER + UrlConstant.LOGIN_DO, ShiroFilterConstant.ANON);
+        //filterChainDefinitionMap.put(UrlConstant.MENU_DO, ShiroFilterConstant.ANON);
+        //filterChainDefinitionMap.put(UrlConstant.ERROR_DO, ShiroFilterConstant.ANON);
+        //filterChainDefinitionMap.put(UrlConstant.GENERAL_DATA_DO, ShiroFilterConstant.ANON);
+        //filterChainDefinitionMap.put(UrlConstant.SESSIONLESS_DO1, ShiroFilterConstant.ANON);
 
         // Durid监控平台
         filterChainDefinitionMap.put("/druid/**", ShiroFilterConstant.ANON);
@@ -173,6 +202,14 @@ public class ShiroConfig {
 
         permissionScan(filterChainDefinitionMap);
 
+        Set<Map.Entry<String, String>> entrySet = filterChainDefinitionMap.entrySet();
+        // logger.debug(String.format("%s | %s", StringUtils.smartTab("地址", 7), "权限"));
+        for (Map.Entry<String, String> entry : entrySet) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            logger.debug(String.format("%s | %s", StringUtils.smartTab(key, 7), value));
+        }
+
         // 其他URL权限均为User
         filterChainDefinitionMap.put("/**", ShiroFilterConstant.USER);
         return filterChainDefinitionMap;
@@ -186,7 +223,7 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setUnauthorizedUrl(UrlConstant.ERROR_DO);
 
         Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
-        filters.put(ShiroFilterConstant.PERMS, new PermsOnAccessDeniedFilter());
+        filters.put(ShiroFilterConstant.PERMS, new PermsFilter());
         shiroFilterFactoryBean.setFilters(filters);
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap());
@@ -199,15 +236,7 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(customRealm());
+        securityManager.setRealm(customRealm);
         return securityManager;
-    }
-
-    /**
-     * 自定义身份认证 realm;
-     */
-    @Bean
-    public CustomRealm customRealm() {
-        return new CustomRealm();
     }
 }

@@ -2,8 +2,8 @@ package com.kovizone.admin.service;
 
 import java.util.List;
 
-import com.kovizone.admin.bo.Menu;
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.Menu;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.po.SystemPermission;
 
 /**

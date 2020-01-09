@@ -39,6 +39,9 @@ public class PackageUtil {
      * @return 类的完整名称
      */
     public static List<String> getClassName(String packageName, boolean childPackage) {
+        if (!childPackage && packageName.substring(packageName.length() - 2).equals(".*")) {
+            return getClassName(packageName.substring(0, packageName.length() - 2), true);
+        }
         List<String> fileNames = null;
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         String packagePath = packageName.replace(".", "/");

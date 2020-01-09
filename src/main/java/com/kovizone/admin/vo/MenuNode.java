@@ -1,4 +1,4 @@
-package com.kovizone.admin.bo;
+package com.kovizone.admin.vo;
 
 import java.util.List;
 

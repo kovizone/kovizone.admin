@@ -54,6 +54,6 @@ public class UrlConstant {
 
 	public static final String GENERAL_DATA_DO = "/generalData.do";
 
-	public static final String SESSIONLESS_DO = "/sessionless.do";
+	public static final String SESSIONLESS_DO1 = "/sessionless.do";
 
 }

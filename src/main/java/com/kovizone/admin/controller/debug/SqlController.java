@@ -1,6 +1,6 @@
 package com.kovizone.admin.controller.debug;
 
-import com.kovizone.admin.bo.GeneralData;
+import com.kovizone.admin.vo.GeneralData;
 import com.kovizone.admin.constant.UrlConstant;
 import com.kovizone.admin.util.GeneralUtils;
 import com.alibaba.fastjson.JSONArray;

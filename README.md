@@ -8,14 +8,13 @@ src/main
 ├── java - 代码包
 |    └── com.kovizone.admin
 |         ├── anno - 自定义注解层*
-|         ├── bo - 业务对象层（BusinessObject）
+|         ├── vo - 视图对象层（ViewObject）
 |         ├── config - 配置层*
 |         ├── constant - 常量层
 |         ├── controller - 控制层*
 |         ├── filter - 过滤层*
 |         ├── mapper - Mybatis映射接口层（持久层）
 |         ├── po - 持久对象层（PersistentObject）
-|         ├── realm - shiro领域层*
 |         ├── service - 服务接口层
 |         |    └── impl - 服务实现层
 |         └── util - 工具层
@@ -80,7 +79,7 @@ src/main
 
 ### 6. 控制层开发
 
-#### 6.1 针对跳转式控制方法强制要求
+#### 6.1 针对跳转请求控制方法强制要求
 
 > 即无@RestController注解类，且无@ResponseBody注解的方法
 
@@ -106,13 +105,17 @@ public String view() {
 }
 ```
 
-#### 6.2 针对非跳转式控制方法强制要求
+#### 6.2 针对AJAX异步请求控制方法强制要求
 
 > 即@RestController注解类，或有@ResponseBody注解的方法
 
 ##### 6.2.1. 不允许返回String，尽量返回GeneralData对象
 
-不论是需要返回数组、对象、或是简单的字符串，也要使用GeneralData封装一次再返回，前端需要多加判断，此举是为了兼容会话超时的统一处理，关于会话超时在后面有提到；
+不论是需要返回数组、对象、或是简单的字符串，
+也要使用GeneralData封装一次再返回，
+前端需要多加判断，
+此举是为了兼容会话超时的统一处理，
+关于会话超时在后面有提到；
 
 ###### 关于GeneralData对象
 ```JAVA

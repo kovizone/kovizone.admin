@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.kovizone.admin.bo.GeneralData;
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.GeneralData;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.constant.CodeConstant;
 import com.kovizone.admin.constant.MessageConstant;
 import com.kovizone.admin.constant.UrlConstant;

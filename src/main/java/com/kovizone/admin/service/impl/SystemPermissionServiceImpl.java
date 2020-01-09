@@ -4,9 +4,9 @@ import com.kovizone.admin.constant.CodeConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kovizone.admin.bo.Menu;
-import com.kovizone.admin.bo.MenuNode;
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.Menu;
+import com.kovizone.admin.vo.MenuNode;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.mapper.SystemPermissionMapper;
 import com.kovizone.admin.mapper.SystemRolePermissionMapper;
 import com.kovizone.admin.po.SystemPermission;

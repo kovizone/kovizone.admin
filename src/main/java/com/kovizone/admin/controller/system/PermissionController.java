@@ -2,8 +2,8 @@ package com.kovizone.admin.controller.system;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.kovizone.admin.bo.GeneralData;
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.GeneralData;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.constant.CodeConstant;
 import com.kovizone.admin.constant.MessageConstant;
 import com.kovizone.admin.constant.ViewConstant;

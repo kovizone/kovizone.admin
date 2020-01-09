@@ -1,8 +1,8 @@
 package com.kovizone.admin.controller.system;
 
 import com.kovizone.admin.anno.PermissionScanIgnore;
-import com.kovizone.admin.bo.GeneralData;
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.GeneralData;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.constant.UrlConstant;
 import com.kovizone.admin.po.SystemRole;
 import com.kovizone.admin.service.SystemRoleService;

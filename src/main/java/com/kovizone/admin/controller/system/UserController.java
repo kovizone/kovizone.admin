@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kovizone.admin.anno.PermissionScanIgnore;
-import com.kovizone.admin.bo.GeneralData;
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.GeneralData;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.po.SystemUser;
 import com.kovizone.admin.service.SystemRoleService;
 import com.kovizone.admin.service.SystemUserService;
@@ -85,8 +85,8 @@ public class UserController {
      * @param request 请求
      * @return GeneralData
      */
-    @PermissionScanIgnore
-    @PostMapping(UrlConstant.LOGIN_DO)
+    @PermissionScanIgnore(loginRequired = false)
+    @PostMapping("/login.do")
     @ResponseBody
     public GeneralData login(HttpServletRequest request) {
 
@@ -254,7 +254,7 @@ public class UserController {
         }
     }
 
-    @RequestMapping(UrlConstant.LIST_DO)
+    @RequestMapping("/list.do")
     @ResponseBody
     public TableData<SystemUser> list(HttpServletRequest request) {
         SystemUser systemUser = DataUtils.request2Object(request, SystemUser.class);
@@ -269,7 +269,7 @@ public class UserController {
         return tableData;
     }
 
-    @PostMapping(UrlConstant.REMOVE_DO)
+    @PostMapping("/remove.do")
     @ResponseBody
     public GeneralData remove(HttpServletRequest request) {
         try {

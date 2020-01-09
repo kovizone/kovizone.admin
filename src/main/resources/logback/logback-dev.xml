@@ -46,6 +46,7 @@
     </root>
 
     <!-- Mybatis SQL 日志输出 -->
-    <logger name="com.airepay.up.air.travel.admin.mapper" level="DEBUG"/>
+    <logger name="com.kovizone.admin.mapper" level="DEBUG"/>
+    <logger name="com.kovizone.admin.config.ShiroConfig" level="DEBUG"/>
 
 </configuration>

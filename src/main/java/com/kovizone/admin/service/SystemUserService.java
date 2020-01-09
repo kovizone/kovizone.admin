@@ -1,6 +1,6 @@
 package com.kovizone.admin.service;
 
-import com.kovizone.admin.bo.TableData;
+import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.po.SystemUser;
 
 /**

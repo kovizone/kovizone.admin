@@ -24,9 +24,9 @@ import java.net.URLEncoder;
  * @author KoviChen
  * @version 0.0.1 2019-08-12 KoviChen 新建类
  */
-public class PermsOnAccessDeniedFilter extends PermissionsAuthorizationFilter {
+public class PermsFilter extends PermissionsAuthorizationFilter {
 
-    private Logger logger = LoggerFactory.getLogger(PermsOnAccessDeniedFilter.class);
+    private Logger logger = LoggerFactory.getLogger(PermsFilter.class);
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
@@ -48,13 +48,13 @@ public class PermsOnAccessDeniedFilter extends PermissionsAuthorizationFilter {
 
         logger.info(sessionId + ": " + errorMsg + ajaxFlag);
         if (HttpUtils.isAJAX(request)) {
-
-            String url = "/generalData.do";
+            String url = httpServletRequest.getContextPath();
+            url += "/generalData.do";
             url += "?result=false";
             url += "&code=" + HttpConstant.FORBIDDEN;
             url += "&msg=" + URLEncoder.encode(errorMsg, "UTF-8");
 
-            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + url);
+            httpServletResponse.sendRedirect(url);
             return false;
         }
         super.onAccessDenied(request, response);
