@@ -350,15 +350,6 @@
                             "url": data.url,
                             "show": data.show === '1'
                         });
-
-                        // 解决下拉框被隐藏（part1:修改样式）
-                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
-                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
-                    },
-                    end: function () {
-                        // 解决下拉框被隐藏（part2:恢复原样）
-                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
-                        treeSelect.destroy('editParentnoTreeSelect');
                     }
                 });
             }
@@ -406,15 +397,8 @@
                             "url": null,
                             "show": true
                         });
-
-                        // 解决下拉框被隐藏（part1:修改样式）
-                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
-                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
                     },
                     end: function () {
-                        // 解决下拉框被隐藏（part2:恢复原样）
-                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
-
                         //销毁下拉框
                         treeSelect.destroy('saveParentnoTreeSelect');
                     }

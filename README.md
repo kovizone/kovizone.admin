@@ -8,16 +8,17 @@ src/main
 ├── java - 代码包
 |    └── com.kovizone.admin
 |         ├── anno - 自定义注解层*
-|         ├── vo - 视图对象层（ViewObject）
 |         ├── config - 配置层*
 |         ├── constant - 常量层
 |         ├── controller - 控制层*
 |         ├── filter - 过滤层*
 |         ├── mapper - Mybatis映射接口层（持久层）
 |         ├── po - 持久对象层（PersistentObject）
+|         ├── registrar - 注册器*
 |         ├── service - 服务接口层
 |         |    └── impl - 服务实现层
-|         └── util - 工具层
+|         ├── util - 工具层
+|         └── vo - 视图对象层（ViewObject）
 └── resources - 资源包
      ├── logback - Logback日志配置包
      ├── mapper - mybatis映射配置包

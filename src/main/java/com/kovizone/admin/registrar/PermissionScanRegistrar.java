@@ -1,10 +1,8 @@
-package com.kovizone.admin.anno;
+package com.kovizone.admin.registrar;
 
-import com.alibaba.fastjson.JSONObject;
+import com.kovizone.admin.anno.PermissionScan;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.annotation.Annotation;

@@ -48,13 +48,15 @@ public class PermsFilter extends PermissionsAuthorizationFilter {
 
         logger.info(sessionId + ": " + errorMsg + ajaxFlag);
         if (HttpUtils.isAJAX(request)) {
-            String url = httpServletRequest.getContextPath();
-            url += "/generalData.do";
-            url += "?result=false";
-            url += "&code=" + HttpConstant.FORBIDDEN;
-            url += "&msg=" + URLEncoder.encode(errorMsg, "UTF-8");
-
-            httpServletResponse.sendRedirect(url);
+            StringBuilder url = new StringBuilder();
+            url.append(httpServletRequest.getContextPath());
+            url.append("/generalData.do");
+            url.append("?result=false");
+            url.append("&code=");
+            url.append(HttpConstant.FORBIDDEN);
+            url.append("&msg=");
+            url.append(URLEncoder.encode(errorMsg, "UTF-8"));
+            httpServletResponse.sendRedirect(url.toString());
             return false;
         }
         super.onAccessDenied(request, response);

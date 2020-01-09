@@ -1,7 +1,7 @@
 package com.kovizone.admin.config;
 
 import com.kovizone.admin.anno.PermissionScanIgnore;
-import com.kovizone.admin.anno.PermissionScanRegistrar;
+import com.kovizone.admin.registrar.PermissionScanRegistrar;
 import com.kovizone.admin.constant.ShiroFilterConstant;
 import com.kovizone.admin.constant.UrlConstant;
 import com.kovizone.admin.filter.PermsFilter;
@@ -13,7 +13,6 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,6 @@ import com.kovizone.admin.util.PackageUtil;
 
 import javax.servlet.Filter;
 import java.lang.reflect.Method;
-import java.security.Permission;
 import java.util.*;
 
 /**
@@ -68,7 +66,9 @@ public class ShiroConfig {
             if (mapping != null && !"".equals(mapping)) {
                 String url = parentUrl + mapping;
                 if (!unrealizedUrlList.contains(url)) {
-                    notRegisterUrlList.add(url);
+                    if (filter.startsWith(ShiroFilterConstant.PERMS)) {
+                        notRegisterUrlList.add(url);
+                    }
                 } else {
                     unrealizedUrlList.remove(url);
                 }
@@ -181,14 +181,6 @@ public class ShiroConfig {
         // 设置拦截器
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
 
-        // 所有用户允许的地址
-        //filterChainDefinitionMap.put(UrlConstant.LOGIN_DO, ShiroFilterConstant.ANON);
-        //filterChainDefinitionMap.put(UrlConstant.USER + UrlConstant.LOGIN_DO, ShiroFilterConstant.ANON);
-        //filterChainDefinitionMap.put(UrlConstant.MENU_DO, ShiroFilterConstant.ANON);
-        //filterChainDefinitionMap.put(UrlConstant.ERROR_DO, ShiroFilterConstant.ANON);
-        //filterChainDefinitionMap.put(UrlConstant.GENERAL_DATA_DO, ShiroFilterConstant.ANON);
-        //filterChainDefinitionMap.put(UrlConstant.SESSIONLESS_DO1, ShiroFilterConstant.ANON);
-
         // Durid监控平台
         filterChainDefinitionMap.put("/druid/**", ShiroFilterConstant.ANON);
 
@@ -202,16 +194,15 @@ public class ShiroConfig {
 
         permissionScan(filterChainDefinitionMap);
 
+        // 其他URL权限均为User
+        filterChainDefinitionMap.put("/**", ShiroFilterConstant.USER);
+
         Set<Map.Entry<String, String>> entrySet = filterChainDefinitionMap.entrySet();
-        // logger.debug(String.format("%s | %s", StringUtils.smartTab("地址", 7), "权限"));
         for (Map.Entry<String, String> entry : entrySet) {
             String key = entry.getKey();
             String value = entry.getValue();
-            logger.debug(String.format("%s | %s", StringUtils.smartTab(key, 7), value));
+            logger.debug(String.format("%s | %s", StringUtils.smartTab(key, 6), value));
         }
-
-        // 其他URL权限均为User
-        filterChainDefinitionMap.put("/**", ShiroFilterConstant.USER);
         return filterChainDefinitionMap;
     }
 

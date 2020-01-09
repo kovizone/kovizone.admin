@@ -59,3 +59,8 @@ label.xrequired:before {
 td {
     white-space: nowrap;
 }
+
+/* 修复弹出层下拉框被限制的问题 */
+.layui-layer-content {
+    overflow: visible
+}

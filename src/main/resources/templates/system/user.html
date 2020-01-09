@@ -441,14 +441,6 @@
                             "birthday": dateFormat(data.birthday),
                             "status": data.status,
                         });
-
-                        // 解决下拉框被隐藏（part1:修改样式）
-                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
-                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
-                    },
-                    end: function () {
-                        // 解决下拉框被隐藏（part2:恢复原样）
-                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
                     }
                 });
             }
@@ -485,14 +477,6 @@
                             "newPassword1": null,
                             "newPassword2": null
                         });
-
-                        // 解决下拉框被隐藏（part1:修改样式）
-                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
-                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
-                    },
-                    end: function () {
-                        // 解决下拉框被隐藏（part2:恢复原样）
-                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
                     }
                 });
             }
@@ -526,14 +510,6 @@
                             "status": '0',
                             "rno": null
                         });
-
-                        // 解决下拉框被隐藏（part1:修改样式）
-                        cssFlag = $(selector).parent(".layui-layer-content").first().css("overflow");
-                        $(selector).parent(".layui-layer-content").first().css("overflow", "visible");
-                    },
-                    end: function () {
-                        // 解决下拉框被隐藏（part2:恢复原样）
-                        $(selector).parent(".layui-layer-content").first().css("overflow", cssFlag);
                     }
                 });
             }
