@@ -61,7 +61,7 @@ public class SystemUserServiceImpl implements SystemUserService {
         if (!systemUser.getPassword().equalsIgnoreCase(checkPassword)) {
             return CodeConstant.PASSWORD_ERROR;
         }
-        String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGHT);
+        String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGTH);
         systemUser.setPassword(saltPassword(systemUser.getPassword().toUpperCase(), newSalt));
         systemUser.setSalt(newSalt);
         systemUser.setCreaterno(createrno);
@@ -111,7 +111,7 @@ public class SystemUserServiceImpl implements SystemUserService {
 
     @Override
     public boolean checkPassword(String basePassword, String userPassword, String salt) {
-        if (salt != null && salt.length() == NumberConstant.SALT_LENGHT) {
+        if (salt != null && salt.length() == NumberConstant.SALT_LENGTH) {
             return basePassword.equals(saltPassword(userPassword, salt));
         }
 
@@ -122,7 +122,7 @@ public class SystemUserServiceImpl implements SystemUserService {
 
     @Override
     public String saltPassword(String password, String salt) {
-        if (salt == null || salt.length() != NumberConstant.SALT_LENGHT) {
+        if (salt == null || salt.length() != NumberConstant.SALT_LENGTH) {
             return DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8)).toUpperCase();
         }
         StringBuilder sb = new StringBuilder(password);

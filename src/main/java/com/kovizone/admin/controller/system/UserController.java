@@ -209,7 +209,7 @@ public class UserController {
             }
 
             // 更新密码盐
-            String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGHT);
+            String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGTH);
             systemUser.setPassword(systemUserService.saltPassword(newPassword1, newSalt));
             systemUser.setSalt(newSalt);
             int result = systemUserService.update(systemUser, null);
@@ -240,7 +240,7 @@ public class UserController {
             }
 
             // 更新密码盐
-            String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGHT);
+            String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGTH);
             systemUser.setPassword(systemUserService.saltPassword(newPassword1, newSalt));
             systemUser.setSalt(newSalt);
             int result = systemUserService.update(systemUser, null);

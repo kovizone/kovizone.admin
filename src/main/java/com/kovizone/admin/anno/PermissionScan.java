@@ -1,6 +1,5 @@
 package com.kovizone.admin.anno;
 
-import com.kovizone.admin.registrar.PermissionScanRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.ElementType;

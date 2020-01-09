@@ -1,12 +1,9 @@
-package com.kovizone.admin.registrar;
+package com.kovizone.admin.anno;
 
-import com.kovizone.admin.anno.PermissionScan;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
-import java.lang.annotation.Annotation;
-import java.util.Iterator;
 import java.util.Map;
 
 /**

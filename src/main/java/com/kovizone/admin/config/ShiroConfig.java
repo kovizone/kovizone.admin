@@ -1,12 +1,12 @@
 package com.kovizone.admin.config;
 
 import com.kovizone.admin.anno.PermissionScanIgnore;
-import com.kovizone.admin.registrar.PermissionScanRegistrar;
+import com.kovizone.admin.anno.PermissionScanRegistrar;
 import com.kovizone.admin.constant.ShiroFilterConstant;
 import com.kovizone.admin.filter.PermissionsFilter;
-import com.kovizone.admin.mapper.SystemPermissionMapper;
 import com.kovizone.admin.util.StringUtils;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
@@ -35,14 +35,11 @@ public class ShiroConfig {
 
     private Logger logger = LoggerFactory.getLogger(ShiroConfig.class);
 
-    private SystemPermissionMapper systemPermissionMapper;
-
-    private CustomRealm customRealm;
+    private AuthorizingRealm authorizingRealm;
 
     @Autowired(required = false)
-    public ShiroConfig(SystemPermissionMapper systemPermissionMapper, CustomRealm customRealm) {
-        this.systemPermissionMapper = systemPermissionMapper;
-        this.customRealm = customRealm;
+    public ShiroConfig(AuthorizingRealm authorizingRealm) {
+        this.authorizingRealm = authorizingRealm;
     }
 
     /**
@@ -51,26 +48,15 @@ public class ShiroConfig {
      * @param filterChainDefinitionMap 过滤映射Map
      * @param parentUrl                控制层父请求地址
      * @param mappings                 映射地址集
-     * @param unrealizedUrlList        未实现地址权限
-     * @param notRegisterUrlList       未注册地址权限
      * @param filter                   权限过滤标识
      */
     private void permissionScanMapping(Map<String, String> filterChainDefinitionMap,
                                        String parentUrl,
                                        String[] mappings,
-                                       List<String> unrealizedUrlList,
-                                       List<String> notRegisterUrlList,
                                        String filter) {
         for (String mapping : mappings) {
             if (mapping != null && !"".equals(mapping)) {
                 String url = parentUrl + mapping;
-                if (!unrealizedUrlList.contains(url)) {
-                    if (filter.startsWith(ShiroFilterConstant.PERMS)) {
-                        notRegisterUrlList.add(url);
-                    }
-                } else {
-                    unrealizedUrlList.remove(url);
-                }
                 filterChainDefinitionMap.put(url, filter.replace("#url", url));
             }
         }
@@ -83,15 +69,11 @@ public class ShiroConfig {
      * @param filterChainDefinitionMap 过滤映射Map
      * @param parentUrl                控制层父请求地址
      * @param methods                  方法集
-     * @param unrealizedUrlList        未实现地址权限
-     * @param notRegisterUrlList       未注册地址权限
      * @param filter                   权限过滤标识
      */
     private void permissionScanMethod(Map<String, String> filterChainDefinitionMap,
                                       String parentUrl,
                                       Method[] methods,
-                                      List<String> unrealizedUrlList,
-                                      List<String> notRegisterUrlList,
                                       String filter) {
         for (Method method : methods) {
             if (method.isAnnotationPresent(PermissionScanIgnore.class)) {
@@ -109,7 +91,7 @@ public class ShiroConfig {
                 mappings = method.getAnnotation(GetMapping.class).value();
             }
             if (mappings != null) {
-                permissionScanMapping(filterChainDefinitionMap, parentUrl, mappings, unrealizedUrlList, notRegisterUrlList, filter);
+                permissionScanMapping(filterChainDefinitionMap, parentUrl, mappings, filter);
             }
         }
     }
@@ -120,10 +102,6 @@ public class ShiroConfig {
      * @param filterChainDefinitionMap 过滤映射Map
      */
     private void permissionScan(Map<String, String> filterChainDefinitionMap) {
-        // 获取已注册地址权限
-        List<String> unrealizedUrlList = systemPermissionMapper.listUrl();
-        List<String> notRegisterUrlList = new ArrayList<>();
-
         // 遍历控制层，生成权限（URL即为权限）
         String[] permissionScans = PermissionScanRegistrar.getPermissionScans();
         if (permissionScans == null) {
@@ -150,8 +128,6 @@ public class ShiroConfig {
                         permissionScanMethod(filterChainDefinitionMap,
                                 parentUrl,
                                 clazz.getMethods(),
-                                unrealizedUrlList,
-                                notRegisterUrlList,
                                 filter);
 
                     } catch (ClassNotFoundException e) {
@@ -160,12 +136,6 @@ public class ShiroConfig {
                     }
                 }
             }
-        }
-        if (!unrealizedUrlList.isEmpty()) {
-            logger.warn("待实现地址权限：" + unrealizedUrlList.toString());
-        }
-        if (!notRegisterUrlList.isEmpty()) {
-            logger.warn("待注册地址权限：" + notRegisterUrlList.toString());
         }
 
     }
@@ -226,7 +196,7 @@ public class ShiroConfig {
     @Bean
     public SecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(customRealm);
+        securityManager.setRealm(authorizingRealm);
         return securityManager;
     }
 }

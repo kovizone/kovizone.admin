@@ -14,7 +14,6 @@ src/main
 |         ├── filter - 过滤层*
 |         ├── mapper - Mybatis映射接口层（持久层）
 |         ├── po - 持久对象层（PersistentObject）
-|         ├── registrar - 注册器*
 |         ├── service - 服务接口层
 |         |    └── impl - 服务实现层
 |         ├── util - 工具层
@@ -252,15 +251,6 @@ layui的table组件原本应当识别特定数据格式，但当会话超时返�
 
 ### 7. Shiro权限控制
 
-只要在application中controllerScan指定正确的控制层包名，系统初始化时将会自动扫描该包（及其子包）内的方法和对应的URL，并将该URL识别为该方法的权限
-
-当数据库中的权限表（system_permission）中没有找到该权限（url）时，或者在数据库中存在，但是控制层没有对应的控制方法时，会在控制台输出日志进行提示，如下所示：
-
-```LOG
-待实现地址权限：[/permission/view.do]
-待注册地址权限：[/test/test.do]
-```
-
-> 待注册：指数据库中不存在该权限
-
-> 待实现：指数据库中的该权限没有对应的控制方法
+只要在application中controllerScan指定正确的控制层包名，
+系统初始化时将会自动扫描该包（及其子包）内的方法和对应的映射地址，
+并将该映射地址识别为该方法的权限

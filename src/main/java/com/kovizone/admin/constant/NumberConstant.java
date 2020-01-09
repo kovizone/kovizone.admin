@@ -11,5 +11,5 @@ public class NumberConstant {
 	/**
 	 * 密码盐长度
 	 */
-	public static final int SALT_LENGHT = 32;
+	public static final int SALT_LENGTH = 32;
 }

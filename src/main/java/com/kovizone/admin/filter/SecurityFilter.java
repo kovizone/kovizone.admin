@@ -81,7 +81,7 @@ public class SecurityFilter implements Filter {
         if (parameterMap != null && parameterMap.size() != 0) {
             JSONObject json = JSONObject.parseObject(JSONObject.toJSONString(parameterMap));
             if (json.get("password") != null) {
-                json.put("password", new JSONArray().fluentAdd("****"));
+                json.put("password", new JSONArray().fluentAdd(StringUtils.hide(String.valueOf(json.getJSONArray("password").get(0)))));
             }
             paramMsg = "ParameterMap:" + json;
         }
