@@ -441,6 +441,9 @@
                             "birthday": dateFormat(data.birthday),
                             "status": data.status,
                         });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        $(".layui-layer-content").css("overflow", "visible");
                     }
                 });
             }
@@ -477,6 +480,9 @@
                             "newPassword1": null,
                             "newPassword2": null
                         });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        $(".layui-layer-content").css("overflow", "visible");
                     }
                 });
             }
@@ -510,6 +516,9 @@
                             "status": '0',
                             "rno": null
                         });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        $(".layui-layer-content").css("overflow", "visible");
                     }
                 });
             }
@@ -521,6 +530,7 @@
                 layer.msg(generalData.msg);
                 if (generalData.result) {
                     table.reload('dataTable');
+                    alert(layer.index);
                     layer.close((layer.index) - 1);
                 }
             });

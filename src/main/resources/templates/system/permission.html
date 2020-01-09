@@ -195,7 +195,7 @@
     </div>
 </script>
 <script>
-	var localUrl = '[[${#httpServletRequest.getContextPath()}]]';
+    var localUrl = '[[${#httpServletRequest.getContextPath()}]]';
     layui.config({
         base: localUrl + '/lib/layui/'
     });
@@ -350,6 +350,12 @@
                             "url": data.url,
                             "show": data.show === '1'
                         });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        $(".layui-layer-content").css("overflow", "visible");
+                    },
+                    end: function () {
+                        treeSelect.destroy('editParentnoTreeSelect');
                     }
                 });
             }
@@ -397,6 +403,9 @@
                             "url": null,
                             "show": true
                         });
+
+                        // 解决下拉框被隐藏（part1:修改样式）
+                        $(".layui-layer-content").css("overflow", "visible");
                     },
                     end: function () {
                         //销毁下拉框
