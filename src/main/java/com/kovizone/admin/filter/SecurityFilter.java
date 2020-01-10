@@ -40,18 +40,18 @@ public class SecurityFilter implements Filter {
     /**
      * 静态资源
      */
-    private List<String> staticList = new ArrayList<>();
+    private List<String> staticResourcesTypeList = new ArrayList<>();
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        staticList.add(".html");
-        staticList.add(".htm");
-        staticList.add(".css");
-        staticList.add(".js");
-        staticList.add(".jpg");
-        staticList.add(".png");
-        staticList.add(".gif");
-        staticList.add(".woff2");
+        staticResourcesTypeList.add(".html");
+        staticResourcesTypeList.add(".htm");
+        staticResourcesTypeList.add(".css");
+        staticResourcesTypeList.add(".js");
+        staticResourcesTypeList.add(".jpg");
+        staticResourcesTypeList.add(".png");
+        staticResourcesTypeList.add(".gif");
+        staticResourcesTypeList.add(".woff2");
     }
 
     @Override
@@ -64,19 +64,14 @@ public class SecurityFilter implements Filter {
         String ajaxFlag = isAjax ? "[" + HttpConstant.AJAX + "]" : "";
 
         String uri = request.getRequestURI();
-        String type = uri.substring(uri.lastIndexOf("."));
+        int beginIndex = uri.lastIndexOf(".");
+        int endIndex = (uri.contains("?") && uri.indexOf("?") > beginIndex) ? uri.indexOf("?") : uri.length();
+        String type = uri.substring(beginIndex, endIndex);
         String method = request.getMethod();
         if (method.length() < 4) {
-            method += " ";
+            method = " " + method;
         }
 
-        for (String staticResource : staticList) {
-            if (type.equals(staticResource)) {
-                filterChain.doFilter(servletRequest, servletResponse);
-                logger.debug(String.format("%s %s : %s %s %s", sessionId, method, uri, ajaxFlag, "[static]"));
-                return;
-            }
-        }
         Map<String, String[]> parameterMap = request.getParameterMap();
         String paramMsg = "";
         if (parameterMap != null && parameterMap.size() != 0) {
@@ -86,7 +81,15 @@ public class SecurityFilter implements Filter {
             }
             paramMsg = "ParameterMap:" + json;
         }
-        logger.info(String.format("%s %s : %s %s %s", sessionId, method, uri, ajaxFlag, paramMsg));
+        String logStr = String.format("%s : %s -> %s %s %s", sessionId, method, uri, ajaxFlag, paramMsg);
+        for (String staticResourcesType : staticResourcesTypeList) {
+            if (type.equals(staticResourcesType)) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                logger.debug(logStr);
+                return;
+            }
+        }
+        logger.info(logStr);
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }
