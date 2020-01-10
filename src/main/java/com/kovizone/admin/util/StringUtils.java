@@ -140,6 +140,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
         }
     }
 
+    private static final String HIDE = "*";
+
 
     /**
      * 脱敏处理
@@ -167,7 +169,7 @@ public class StringUtils extends org.springframework.util.StringUtils {
         if (length >= 2) {
             return arg.substring(0, 1) + buildHide(length - 1);
         }
-        return arg;
+        return HIDE;
     }
 
     /**
@@ -177,9 +179,6 @@ public class StringUtils extends org.springframework.util.StringUtils {
      * @return bit位的*
      */
     public static String buildHide(int bit) {
-        if (bit > 0) {
-            return "*" + buildHide(bit - 1);
-        }
-        return "";
+        return bit > 0 ? (HIDE + buildHide(--bit)) : "";
     }
 }
