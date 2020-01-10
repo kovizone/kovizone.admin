@@ -50,6 +50,7 @@ public class SecurityFilter implements Filter {
         staticList.add(".js");
         staticList.add(".jpg");
         staticList.add(".png");
+        staticList.add(".gif");
         staticList.add(".woff2");
     }
 
