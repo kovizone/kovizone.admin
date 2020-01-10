@@ -57,9 +57,12 @@ public class SystemUserServiceImpl implements SystemUserService {
 
     @Override
     public Integer save(SystemUser systemUser, int createrno, String checkPassword, int[] rnos) {
+        if (getByUname(systemUser.getUname()) != null) {
+            return CodeConstant.USER_NAME_EXISTS;
+        }
 
         if (!systemUser.getPassword().equalsIgnoreCase(checkPassword)) {
-            return CodeConstant.PASSWORD_ERROR;
+            return CodeConstant.CHECK_PASSWORD_FAIL;
         }
         String newSalt = DataUtils.getRandom(NumberConstant.SALT_LENGTH);
         systemUser.setPassword(saltPassword(systemUser.getPassword().toUpperCase(), newSalt));

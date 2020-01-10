@@ -145,8 +145,11 @@ public class UserController {
             if (result > 0) {
                 return new GeneralData(true, MessageConstant.SAVE_SUCCESS);
             }
-            if (result == CodeConstant.PASSWORD_ERROR) {
+            if (result == CodeConstant.CHECK_PASSWORD_FAIL) {
                 return new GeneralData(false, MessageConstant.CHECK_PASSWORD_FAIL);
+            }
+            if (result == CodeConstant.USER_NAME_EXISTS) {
+                return new GeneralData(false, MessageConstant.USER_NAME_EXISTS);
             }
             return new GeneralData(false, MessageConstant.SAVE_FAIL + "（" + result + "）");
         } catch (Exception e) {
