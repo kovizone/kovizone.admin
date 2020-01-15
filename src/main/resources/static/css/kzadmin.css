@@ -26,8 +26,11 @@
     line-height: 30px;
 }
 
+.container {
+}
+
 .left-nav {
-    box-shadow: 1px 5px 5px #cccccc;
+    border-right: solid 1px #ddd;
 }
 
 blockquote .warning {

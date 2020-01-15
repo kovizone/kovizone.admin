@@ -160,6 +160,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/fonts/**", ShiroFilterConstant.ANON);
         filterChainDefinitionMap.put("/images/**", ShiroFilterConstant.ANON);
         filterChainDefinitionMap.put("/lib/**", ShiroFilterConstant.ANON);
+        filterChainDefinitionMap.put("/ico/**", ShiroFilterConstant.ANON);
 
         permissionScan(filterChainDefinitionMap);
 

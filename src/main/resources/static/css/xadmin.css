@@ -93,13 +93,21 @@ body{
 .container a,.layui-nav .layui-nav-item a{
     color: #fff;
 }
+.container .logo{
+    margin-left: 10px;
+    float: left;
+}
+.container .logo img{
+    float: left;
+    padding: 5px;
+    height: 35px;
+    width: 35px;
+}
 .container .logo a{
-    background-color: rgba(0,0,0,0);
     float: left;
     font-size: 18px;
-    padding-left: 20px;
     line-height: 45px;
-    width: 300px;
+    width: 250px;
 }
 .container .right{
     background-color:rgba(0,0,0,0);

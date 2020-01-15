@@ -11,6 +11,7 @@
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
     <link rel="stylesheet" th:href="@{/css/xadmin.css}">
     <link rel="stylesheet" th:href="@{/css/kzadmin.css}">
+    <link rel="shortcut icon" th:href="@{/ico/favicon.ico}" type="image/x-icon">
     <!-- <link rel="stylesheet" href="./css/theme5.css"> -->
     <script type="text/javascript" th:src="@{/lib/layui/layui.js}"></script>
     <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
@@ -38,9 +39,9 @@
 <body class="index">
 <!-- 隐藏域，存储初始化属性 -->
 <div id="initResource" style="display: none">
-    <input type="hidden" name="testMode" th:value="${testMode}"> <input type="hidden" name="uname"
-                                                                        th:value="${systemUser.uname}"> <input
-        type="hidden" name="maxInactiveInterval" th:value="${maxInactiveInterval}">
+    <input type="hidden" name="testMode" th:value="${testMode}">
+    <input type="hidden" name="uname" th:value="${systemUser.uname}">
+    <input type="hidden" name="maxInactiveInterval" th:value="${maxInactiveInterval}">
 </div>
 <!-- 顶部开始 -->
 <div class="container">
@@ -50,6 +51,7 @@
         </a>
     </div>
     <div class="logo">
+        <img th:src="@{/ico/favicon.ico}">
         <a th:text="${htmlHeadName}"></a>
     </div>
     <ul class="layui-nav right">
@@ -59,9 +61,9 @@
                 <dd>
                     <a onclick="updatePassowrd()">修改密码</a>
                 </dd>
-                <dd class="test_mode">
+                <!--<dd class="test_mode">
                     <a href="javascript:void(0);" onclick="javascript:$.post(localUrl + '/logout.do');">消除会话</a>
-                </dd>
+                </dd>-->
                 <dd>
                     <a th:href="@{/logout.do}">退出登录</a>
                 </dd>
