@@ -66,7 +66,12 @@ public class SecurityFilter implements Filter {
         String uri = request.getRequestURI();
         int beginIndex = uri.lastIndexOf(".");
         int endIndex = (uri.contains("?") && uri.indexOf("?") > beginIndex) ? uri.indexOf("?") : uri.length();
-        String type = uri.substring(beginIndex, endIndex);
+        String type;
+        if (beginIndex < endIndex && beginIndex >= 0) {
+            type = uri.substring(beginIndex, endIndex);
+        } else {
+            type = null;
+        }
         String method = request.getMethod();
         if (method.length() < 4) {
             method = " " + method;
@@ -82,11 +87,13 @@ public class SecurityFilter implements Filter {
             paramMsg = "ParameterMap:" + json;
         }
         String logStr = String.format("%s : %s -> %s %s %s", sessionId, method, uri, ajaxFlag, paramMsg);
-        for (String staticResourcesType : staticResourcesTypeList) {
-            if (type.equals(staticResourcesType)) {
-                filterChain.doFilter(servletRequest, servletResponse);
-                logger.debug(logStr);
-                return;
+        if (type != null) {
+            for (String staticResourcesType : staticResourcesTypeList) {
+                if (type.equals(staticResourcesType)) {
+                    filterChain.doFilter(servletRequest, servletResponse);
+                    logger.debug(logStr);
+                    return;
+                }
             }
         }
         logger.info(logStr);
