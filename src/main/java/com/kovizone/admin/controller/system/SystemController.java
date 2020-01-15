@@ -98,13 +98,15 @@ public class SystemController {
     }
 
     @PermissionScanIgnore
-    @RequestMapping("/index.do")
+    @RequestMapping({"", "/index.do"})
     public ModelAndView index(HttpServletRequest request) {
         ModelAndView mv = new ModelAndView("index");
         Subject subject = SecurityUtils.getSubject();
         mv.addObject("testMode", "true");
         mv.addObject("systemUser", systemUserService.getByUname(String.valueOf(subject.getPrincipal())));
-        mv.addObject("maxInactiveInterval", request.getSession(false).getMaxInactiveInterval());
+        mv.addObject("maxInactiveInterval", request.getSession(false).
+
+                getMaxInactiveInterval());
         mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
         mv.addObject(ParameterConstant.HTML_HEAD_NAME, htmlHeaderName);
         return mv;
