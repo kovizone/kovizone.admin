@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <link rel="stylesheet" th:href="@{/css/kzadmin.css}">
+    <script type="text/javascript" th:src="@{/lib/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+    <script type="text/javascript" th:src="@{/js/kzadmin.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+
+    <script>
+        function copyImageUrl() {
+            console.log(2);
+            var imageUrl = document.getElementById('imageUrl');
+            imageUrl.select();
+            document.execCommand('copy');
+        }
+    </script>
+
+    <![endif]-->
+</head>
+<body>
+
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-body ">
+
+                    <div class="layui-upload-drag" id="test10">
+                        <i class="layui-icon"></i>
+                        <p>点击上传，或将文件拖拽到此处</p>
+                        <div class="layui-hide" id="uploadImageView">
+                            <hr>
+                            <img src="" alt="上传成功后渲染" style="max-width: 196px">
+                        </div>
+                    </div>
+                    <div class="layui-hide" id="copyImageUrlBtnDiv">
+                        <button id="copyImageUrlBtn" type="button" class="layui-btn layui-btn-primary">复制图片地址</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 设置透明度为0，用于复制 -->
+<input id='imageUrl' type="text" style="opacity: 0">
+
+<script>
+    var localUrl = '[[${#httpServletRequest.getContextPath()}]]';
+    layui.use('upload', function () {
+        var upload = layui.upload;
+
+        upload.render({
+            elem: '#test10'
+            , url: localUrl + '/file/image/upload.do'  //改成您自己的上传接口
+            , done: function (res) {
+                layer.msg('上传成功');
+                var imageUrl = window.location.protocol + "//" + window.location.host + localUrl + "/file/image/" + res.fileName;
+                //localUrl + "/demo/" + res.fileName
+                layui.$('#uploadImageView').removeClass('layui-hide').find('img').attr('src', imageUrl);
+                layui.$('#copyImageUrlBtnDiv').removeClass('layui-hide');
+                layui.$('#imageUrl').val(imageUrl)
+            }
+        });
+
+        $(document).on('click', '#copyImageUrlBtn', function () {
+            var imageUrl = document.getElementById('imageUrl');
+            imageUrl.select();
+            console.log("imageUrl: " + $('#imageUrl').val());
+            document.execCommand("Copy");
+            layer.msg('复制成功');
+        });
+    });
+
+</script>
+
+</body>
+</html>

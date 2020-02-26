@@ -494,6 +494,7 @@
                         type: 'get',
                         search: true,
                         success: function () {
+                            layer.close((layer.index) - 1);
                             treeSelect.checkNode('saveParentnoTreeSelect', data.field.parentno);
                         }
                     });

@@ -1,46 +1,32 @@
-
-/**
- * datetime标准格式化
- * @param timestamp 时间戳
- * @returns {string} yyyy-MM-ss HH:mm:ss 格式时间字符串
- */
-function datetimeFormat(timestamp) {
-    if (timestamp == null || timestamp == '') {
-        return "";
+Date.prototype.format = function (format) {
+    var o = {
+        "m+": this.getMinutes(), //minute
+        "M+": this.getMonth() + 1, //month
+        "d+": this.getDate(), //day
+        "D+": this.getDate(), //day
+        "h+": this.getHours(), //hour
+        "H+": this.getHours(), //hour
+        "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+        "s+": this.getSeconds(), //second
+    };
+    if (/(y+)/.test(format) || /(Y+)/.test(format)) {
+        format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
     }
-    var date = new Date(timestamp);
-    var year = date.getFullYear();
-    var month = date.getMonth() + 1;
-    if (month < 10) {
-        month = "0" + month;
+    if (/(S+)/.test(format)) {
+        format = format.replace(RegExp.$1, (this.getMilliseconds() + "").substr(3 - RegExp.$1.length));
     }
-    var day = date.getDate();
-    if (day < 10) {
-        day = "0" + day;
+    for (const k in o) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        }
     }
-    var hours = date.getHours();
-    if (hours < 10) {
-        hours = "0" + hours;
-    }
-    var minutes = date.getMinutes();
-    if (minutes < 10) {
-        minutes = "0" + minutes;
-    }
-    var seconds = date.getSeconds();
-    if (seconds < 10) {
-        seconds = "0" + seconds;
-    }
-
-    return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
-}
+    return format;
+};
 
 //验证是否为数字 是:true 否:false
 function checkNumber(nubmer) {
-    var re = /^[0-9]+.?[0-9]*/;//判断字符串是否为数字//判断正整数/[1−9]+[0−9]∗]∗/
-    if (!re.test(nubmer)) {
-        return false;
-    }
-    return  true;
+    const re = /^[0-9]+.?[0-9]*/;//判断字符串是否为数字//判断正整数/[1−9]+[0−9]∗]∗/
+    return re.test(nubmer);
 }
 
 /**
@@ -50,7 +36,7 @@ function checkNumber(nubmer) {
  * @returns {string} HH:mm:ss 格式时间字符串
  */
 function timeFormat(timestamp) {
-    if (timestamp == null || timestamp == '') {
+    if (timestamp == null || timestamp === '') {
         return "";
     }
     var date = new Date(timestamp);
@@ -76,7 +62,7 @@ function timeFormat(timestamp) {
  * @returns {string} yyyy-MM-ss 格式时间字符串
  */
 function dateFormat(timestamp) {
-    if (timestamp == null || timestamp == '') {
+    if (timestamp == null || timestamp === '') {
         return "";
     }
     var date = new Date(timestamp);

@@ -33,29 +33,54 @@ public class StringUtils extends org.springframework.util.StringUtils {
 
     private static final int TAB_WIDTH = 4;
 
-    public static void main(String[] args) {
-        int maxTabSize = 7;
-        System.out.println(smartTab("", maxTabSize));
-        System.out.println(smartTab("1", maxTabSize));
-        System.out.println(smartTab("12", maxTabSize));
-        System.out.println(smartTab("123", maxTabSize));
-        System.out.println(smartTab("12345", maxTabSize));
-        System.out.println(smartTab("123456", maxTabSize));
-        System.out.println(smartTab("1234567", maxTabSize));
-        System.out.println(smartTab("12345678", maxTabSize));
-        System.out.println(smartTab("123456789", maxTabSize));
-        System.out.println(smartTab("1234567890", maxTabSize));
-        System.out.println(smartTab("12345678901", maxTabSize));
-        System.out.println(smartTab("123456789012", maxTabSize));
-        System.out.println(smartTab("1234567890123", maxTabSize));
-        System.out.println(smartTab("12345678901234", maxTabSize));
-        System.out.println(smartTab("123456789012345", maxTabSize));
-        System.out.println(smartTab("1234567890123456", maxTabSize));
-        System.out.println(smartTab("12345678901234567", maxTabSize));
-        System.out.println(smartTab("123456789012345678", maxTabSize));
-        System.out.println(smartTab("1234567890123456789", maxTabSize));
-        System.out.println(smartTab("12345678901234567890", maxTabSize));
-        System.out.println(smartTab("123456789012345678901", maxTabSize));
+    /**
+     * 随机值因子
+     */
+    private static final char[] DEFAULE_RANDOM_FACTOR = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+    };
+
+    private static final int RANDOM_NUMBER_LENGTH = 10;
+
+    /**
+     * 生成固定位数的随机值
+     *
+     * @param bit 随机值的位数
+     * @return 随机值
+     */
+    public static String random(Integer bit) {
+        return random(bit, DEFAULE_RANDOM_FACTOR.length);
+    }
+
+    public static String random(Integer bit, int randomLength) {
+        return random(DEFAULE_RANDOM_FACTOR, bit, randomLength);
+    }
+
+    public static String random(char[] randomFactor, Integer bit) {
+        return random(randomFactor, bit, randomFactor.length);
+    }
+
+    public static String random(char[] randomFactor, Integer bit, int randomLength) {
+        char[] randomCharArray = new char[bit];
+        Random random = new Random();
+        for (int i = 0; i < bit; i++) {
+            randomCharArray[i] = randomFactor[random.nextInt(randomLength)];
+        }
+        return String.valueOf(randomCharArray);
+    }
+
+    /**
+     * 生成固定位数的随机数
+     *
+     * @param bit 随机值的位数
+     * @return 随机数
+     */
+    public static String randomNumber(Integer bit) {
+        return random(bit, RANDOM_NUMBER_LENGTH);
     }
 
     /**

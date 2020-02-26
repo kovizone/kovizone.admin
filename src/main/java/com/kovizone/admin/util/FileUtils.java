@@ -1,5 +1,8 @@
 package com.kovizone.admin.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.*;
 import java.util.Base64;
 
@@ -10,6 +13,8 @@ import java.util.Base64;
  * @version 0.0.1 20200108 KoviChen 新建类
  */
 public class FileUtils {
+
+    private static Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
     /**
      * 生成文件Base64字符串
@@ -23,11 +28,11 @@ public class FileUtils {
             inputStream = new FileInputStream(filePath);
             return getFileStr(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            return "";
         } finally {
             GeneralUtils.close(inputStream);
         }
-        return "";
     }
 
     /**
@@ -41,12 +46,55 @@ public class FileUtils {
         try {
             data = new byte[inputStream.available()];
             inputStream.read(data);
+            return Base64.getEncoder().encodeToString(data);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return "";
         }
         // 加密
-        return Base64.getEncoder().encodeToString(data);
+    }
+
+    public static void main(String[] args) {
+        String path = "D://kovi//test4\\\\\test.jpg";
+        System.out.println(path.lastIndexOf("/"));
+        System.out.println(path.substring(0, path.lastIndexOf("\\")));
+        new File(path.substring(0, path.lastIndexOf("\\"))).mkdirs();
+    }
+
+    /**
+     * 构造文件
+     *
+     * @param file 文件字节数组
+     * @param path 文件存放路径（路径+文件名）
+     * @return 构造结果
+     */
+    public static boolean generateFile(byte[] file, String path) {
+        if (file == null) {
+            return false;
+        }
+        OutputStream out = null;
+        try {
+            String folderPath;
+            int folderPathLastIndex = -1;
+            folderPathLastIndex = path.lastIndexOf("/");
+
+            if (folderPathLastIndex == -1) {
+                folderPathLastIndex = path.lastIndexOf("\\");
+            }
+            File folder = new File(path.substring(0, folderPathLastIndex));
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+            out = new FileOutputStream(path);
+            out.write(file);
+            out.flush();
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        } finally {
+            GeneralUtils.close(out);
+        }
     }
 
     /**
@@ -60,7 +108,6 @@ public class FileUtils {
         if (fileStr == null) {
             return false;
         }
-        OutputStream out = null;
         try {
             byte[] b = Base64.getDecoder().decode(fileStr);
             for (int i = 0; i < b.length; ++i) {
@@ -68,15 +115,10 @@ public class FileUtils {
                     b[i] += 256;
                 }
             }
-            out = new FileOutputStream(path);
-            out.write(b);
-            out.flush();
-            return true;
+            return generateFile(b, path);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return false;
-        } finally {
-            GeneralUtils.close(out);
         }
     }
 }
