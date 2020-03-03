@@ -1,14 +1,21 @@
 package com.kovizone.admin.controller.system;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.alibaba.fastjson.JSONObject;
 import com.kovizone.admin.constant.LayuiIconConstatnt;
 import com.kovizone.admin.constant.ParameterConstant;
+import com.kovizone.admin.po.SystemUser;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -62,6 +69,8 @@ import com.kovizone.admin.util.DataUtils;
 @Controller
 public class SystemController {
 
+    private Logger logger = LoggerFactory.getLogger(SystemController.class);
+
     @Value("${html.title}")
     private String htmlTitle;
 
@@ -76,6 +85,15 @@ public class SystemController {
     public SystemController(SystemPermissionService systemPermissionService, SystemUserService systemUserService) {
         this.systemPermissionService = systemPermissionService;
         this.systemUserService = systemUserService;
+    }
+
+    @PermissionScanIgnore
+    @RequestMapping("/now.do")
+    @ResponseBody
+    public Map<String, Object> now() {
+        return new HashMap<String, Object>() {{
+            put("now", new Date());
+        }};
     }
 
     @PermissionScanIgnore(loginRequired = false)
@@ -103,10 +121,8 @@ public class SystemController {
         ModelAndView mv = new ModelAndView("index");
         Subject subject = SecurityUtils.getSubject();
         mv.addObject("testMode", "true");
-        mv.addObject("systemUser", systemUserService.getByUname(String.valueOf(subject.getPrincipal())));
-        mv.addObject("maxInactiveInterval", request.getSession(false).
-
-                getMaxInactiveInterval());
+        mv.addObject("systemUser", (SystemUser) SecurityUtils.getSubject().getPrincipal());
+        mv.addObject("maxInactiveInterval", request.getSession(false).getMaxInactiveInterval());
         mv.addObject(ParameterConstant.HTML_TITLE, htmlTitle);
         mv.addObject(ParameterConstant.HTML_HEAD_NAME, htmlHeaderName);
         return mv;
@@ -158,8 +174,8 @@ public class SystemController {
         List<SystemPermission> systemPermissions = null;
 
         if (type == null || "".equals(type)) {
-            Subject subject = SecurityUtils.getSubject();
-            systemPermissions = systemPermissionService.listContainParentByUname(String.valueOf(subject.getPrincipal()));
+            SystemUser systemUser = (SystemUser) SecurityUtils.getSubject().getPrincipal();
+            systemPermissions = systemPermissionService.listContainParentByUname(systemUser.getUname());
         }
 
         if ("updatePermission".equals(type)) {
@@ -174,6 +190,7 @@ public class SystemController {
             return new Menu();
         }
         Menu menu = systemPermissionService.buildMenu(systemPermissions);
+        logger.debug("生成菜单：{}", menu);
         return menu;
     }
 

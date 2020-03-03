@@ -46,33 +46,40 @@ public class ShiroConfig {
      * 扫描控制层映射地址集（一个控制方法可能有多个请求地址）
      *
      * @param filterChainDefinitionMap 过滤映射Map
-     * @param parentUrl                控制层父请求地址
+     * @param parentMappings           父映射请求集（控制层映射注解）
      * @param mappings                 映射地址集
      * @param filter                   权限过滤标识
      */
     private void permissionScanMapping(Map<String, String> filterChainDefinitionMap,
-                                       String parentUrl,
+                                       String[] parentMappings,
                                        String[] mappings,
                                        String filter) {
-        for (String mapping : mappings) {
-            if (mapping != null && !"".equals(mapping)) {
-                String url = parentUrl + mapping;
-                filterChainDefinitionMap.put(url, filter.replace("#url", url));
+        for (String parentUrl : parentMappings) {
+            for (String mapping : mappings) {
+                if (mapping != null && !"".equals(mapping)) {
+                    String url = parentUrl + mapping;
+                    // 处理RESTful的URL，替换为通配符
+                    // 如：/{id}/{name}.do转换为/*/*.do
+                    String newUrl = url.replaceAll("(\\{)[^{]*(})", "*");
+                    // 若为RESTful的URL，则权限有两个
+                    // 如：URL为：“/{id}/{name}.do”，权限则为：“/*/*.do和/{id}/{name}.do”
+                    String perms = newUrl.equals(url) ? url : String.format("%s,%s", url, newUrl);
+                    filterChainDefinitionMap.put(newUrl, filter.replace("#perms", perms));
+                }
             }
         }
-
     }
 
     /**
      * 扫描控制层方法
      *
      * @param filterChainDefinitionMap 过滤映射Map
-     * @param parentUrl                控制层父请求地址
+     * @param parentMappings           控制层父请求地址
      * @param methods                  方法集
      * @param filter                   权限过滤标识
      */
     private void permissionScanMethod(Map<String, String> filterChainDefinitionMap,
-                                      String parentUrl,
+                                      String[] parentMappings,
                                       Method[] methods,
                                       String filter) {
         for (Method method : methods) {
@@ -91,7 +98,7 @@ public class ShiroConfig {
                 mappings = method.getAnnotation(GetMapping.class).value();
             }
             if (mappings != null) {
-                permissionScanMapping(filterChainDefinitionMap, parentUrl, mappings, filter);
+                permissionScanMapping(filterChainDefinitionMap, parentMappings, mappings, filter);
             }
         }
     }
@@ -113,7 +120,7 @@ public class ShiroConfig {
                 for (String className : classNames) {
                     try {
                         Class<?> clazz = Class.forName(className);
-                        String filter = ShiroFilterConstant.PERMS + "[#url]";
+                        String filter = ShiroFilterConstant.PERMS + "[#perms]";
                         if (clazz.isAnnotationPresent(PermissionScanIgnore.class)) {
                             PermissionScanIgnore permissionScanIgnore = clazz.getAnnotation(PermissionScanIgnore.class);
                             if (permissionScanIgnore.loginRequired()) {
@@ -121,12 +128,18 @@ public class ShiroConfig {
                             }
                             filter = ShiroFilterConstant.ANON;
                         }
-                        String parentUrl = "";
+                        String[] parentMappings;
                         if (clazz.isAnnotationPresent(RequestMapping.class)) {
-                            parentUrl = clazz.getAnnotation(RequestMapping.class).value()[0];
+                            parentMappings = clazz.getAnnotation(RequestMapping.class).value();
+                        } else if (clazz.isAnnotationPresent(PostMapping.class)) {
+                            parentMappings = clazz.getAnnotation(PostMapping.class).value();
+                        } else if (clazz.isAnnotationPresent(GetMapping.class)) {
+                            parentMappings = clazz.getAnnotation(GetMapping.class).value();
+                        } else {
+                            parentMappings = new String[]{""};
                         }
                         permissionScanMethod(filterChainDefinitionMap,
-                                parentUrl,
+                                parentMappings,
                                 clazz.getMethods(),
                                 filter);
 
@@ -137,7 +150,6 @@ public class ShiroConfig {
                 }
             }
         }
-
     }
 
     /**

@@ -170,7 +170,6 @@
         for (var i = 0; i < currenKeyValueInputIndex; i++) {
             var key = $('#requestForm input[name="key' + twoBit(i + 1) + '"]').val();
             var value = $('#requestForm input[name="value' + twoBit(i + 1) + '"]').val();
-            console.log('key: ' + key + ',value: ' + value);
             if (key != null && key !== '') {
                 field[key] = value;
             }

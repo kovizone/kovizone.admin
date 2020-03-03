@@ -38,12 +38,12 @@ public class CustomRealm extends AuthorizingRealm {
 
     @Autowired
     private CustomRealm(
-    		SystemUserService systemUserService,
-			SystemPermissionService systemPermissionService,
-			SystemUserRoleService systemUserRoleService) {
+            SystemUserService systemUserService,
+            SystemPermissionService systemPermissionService,
+            SystemUserRoleService systemUserRoleService) {
         this.systemUserService = systemUserService;
-		this.systemPermissionService = systemPermissionService;
-		this.systemUserRoleService = systemUserRoleService;
+        this.systemPermissionService = systemPermissionService;
+        this.systemUserRoleService = systemUserRoleService;
     }
 
     @Override
@@ -59,18 +59,17 @@ public class CustomRealm extends AuthorizingRealm {
         if (!systemUserService.checkPassword(systemUser.getPassword(), password, systemUser.getSalt())) {
             throw new AccountException("用户名或密码不正确");
         }
-        return new SimpleAuthenticationInfo(token.getPrincipal(), password, getName());
+        return new SimpleAuthenticationInfo(systemUser, password, getName());
     }
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
-        String username = (String) SecurityUtils.getSubject().getPrincipal();
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
 
         Set<String> roles = new HashSet<>();
         Set<String> permissions = new HashSet<>();
 
-        SystemUser systemUser = systemUserService.getByUname(username);
+        SystemUser systemUser = (SystemUser) SecurityUtils.getSubject().getPrincipal();
         SystemUserRole systemUserRole = new SystemUserRole();
         systemUserRole.setUno(systemUser.getUno());
         List<SystemUserRole> systemUserRoles = systemUserRoleService.list(systemUserRole);

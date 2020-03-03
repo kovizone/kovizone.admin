@@ -8,10 +8,9 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.kovizone.admin.anno.PermissionScanIgnore;
@@ -25,7 +24,9 @@ import com.kovizone.admin.util.HttpUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户控制
@@ -109,11 +110,12 @@ public class UserController {
         return new GeneralData(true, MessageConstant.LOGIN_SUCCESS);
     }
 
-    @RequestMapping("/view.do")
+    @RequestMapping(value = "/view.do")
     public ModelAndView view() {
         ModelAndView mv = new ModelAndView("system/user");
         List<?> systemRoleList = systemRoleService.tableData(null, 0, 0).getData();
         mv.addObject("systemRoleList", systemRoleList);
+        mv.addObject("now", new Date());
         return mv;
     }
 
@@ -126,7 +128,7 @@ public class UserController {
                 return null;
             }
             Subject subject = SecurityUtils.getSubject();
-            SystemUser systemUser = systemUserService.getByUname(String.valueOf(subject.getPrincipal()));
+            SystemUser systemUser = (SystemUser) SecurityUtils.getSubject().getPrincipal();
             SystemUser systemUserSaveBean = DataUtils.request2Object(request, SystemUser.class);
             String rnosStr = request.getParameter("rno");
             if (rnosStr == null || "".equals(rnosStr)) {

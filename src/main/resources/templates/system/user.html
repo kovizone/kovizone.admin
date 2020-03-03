@@ -23,7 +23,9 @@
 </head>
 <body>
 <!-- 隐藏域，存储初始化属性 -->
-<div id="initResource" style="display: none"></div>
+<div id="initResource" style="display: none">
+    <div id="nowDate" th:text="${now}"></div>
+</div>
 <!-- 编辑表单弹窗 -->
 <!-- 此处可作为模板 -->
 <div id="editForm" class="layui-fluid" style="display: none">
@@ -193,12 +195,12 @@
 </div>
 <!-- 顶部导航条 -->
 <div class="x-nav">
-		<span class="layui-breadcrumb">
-			<a>系统管理</a>
-			<a>
-				<cite>用户管理</cite>
-			</a>
-		</span>
+    <span class="layui-breadcrumb">
+        <a>系统管理</a>
+        <a>
+            <cite>用户管理</cite>
+        </a>
+    </span>
     <a class="layui-btn layui-btn-small" style="line-height: 1.6em; margin-top: 3px; float: right"
        onclick="location.reload()" title="刷新">
         <i class="layui-icon layui-icon-refresh" style="line-height: 30px"></i>
@@ -276,6 +278,7 @@
     </div>
 </script>
 <script>
+
     var localUrl = '[[${#httpServletRequest.getContextPath()}]]';
     // 初始化下拉多选框取值
     $.post(localUrl + '/init/systemRoleList.do', function (generalData) {
@@ -465,7 +468,6 @@
             if (event === 'resetPassword') {
                 var cssFlag = null;
                 var selector = '#resetPasswordForm';// 编辑弹窗选择
-                console.log("data.uname: " + data.uname);
                 layer.open({
                     type: 1,
                     resize: false,
@@ -530,7 +532,6 @@
                 layer.msg(generalData.msg);
                 if (generalData.result) {
                     table.reload('dataTable');
-                    alert(layer.index);
                     layer.close((layer.index) - 1);
                 }
             });
