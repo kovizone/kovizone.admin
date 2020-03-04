@@ -1,6 +1,7 @@
 package com.kovizone.admin.controller.system;
 
 import com.kovizone.admin.constant.*;
+import com.kovizone.admin.util.*;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -8,6 +9,7 @@ import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +21,6 @@ import com.kovizone.admin.vo.TableData;
 import com.kovizone.admin.po.SystemUser;
 import com.kovizone.admin.service.SystemRoleService;
 import com.kovizone.admin.service.SystemUserService;
-import com.kovizone.admin.util.DataUtils;
-import com.kovizone.admin.util.HttpUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -74,6 +74,9 @@ public class UserController {
 
     private SystemRoleService systemRoleService;
 
+    @Value("${login.rsa.private.key}")
+    private String privateKey;
+
     @Autowired
     public UserController(SystemUserService systemUserService, SystemRoleService systemRoleService) {
         this.systemUserService = systemUserService;
@@ -94,13 +97,23 @@ public class UserController {
         // shiro 身份认证
         try {
             String username = request.getParameter(ParameterConstant.USERNAME);
-            String password = request.getParameter(ParameterConstant.PASSWORD).toUpperCase();
-
+            String password = request.getParameter(ParameterConstant.PASSWORD);
+            String verify = request.getParameter(ParameterConstant.VERIFY);
+            String random = (String) request.getSession().getAttribute(RandomValidateCodeUtil.RANDOM_VALIDATE_CODE_KEY);
+            if (StringUtils.isBlank(verify)) {
+                return new GeneralData(false, "请输入验证码");
+            }
+            if (!RandomValidateCodeUtil.verifyRandomCode(verify, random)) {
+                return new GeneralData(false, "请输入正确的验证码");
+            }
+            //RAS解密
+            password = RSAUtils.decode(password, privateKey);
+            password = MD5Utils.encode(password);
             Subject subject = SecurityUtils.getSubject();
             UsernamePasswordToken token = new UsernamePasswordToken(username, password);
             subject.login(token);
         } catch (AuthenticationException e) {
-            logger.info(HttpUtils.getSessionSimpleId(request.getSession(false)) + ": " + e.getMessage());
+            logger.info("{}:{}", HttpUtils.getSessionSimpleId(request.getSession(false)), e.getMessage());
             return new GeneralData(false, e.getMessage());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

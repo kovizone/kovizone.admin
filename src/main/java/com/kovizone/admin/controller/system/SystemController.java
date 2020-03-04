@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.alibaba.fastjson.JSONObject;
 import com.kovizone.admin.constant.LayuiIconConstatnt;
 import com.kovizone.admin.constant.ParameterConstant;
 import com.kovizone.admin.po.SystemUser;
+import com.kovizone.admin.util.RandomValidateCodeUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -70,6 +73,9 @@ import com.kovizone.admin.util.DataUtils;
 public class SystemController {
 
     private Logger logger = LoggerFactory.getLogger(SystemController.class);
+
+    @Value("${login.rsa.public.key}")
+    private String publicKey;
 
     @Value("${html.title}")
     private String htmlTitle;
@@ -216,5 +222,36 @@ public class SystemController {
     @RequestMapping("/welcome.do")
     public ModelAndView welcome() {
         return new ModelAndView("welcome");
+    }
+
+
+    @ResponseBody
+    @PermissionScanIgnore(loginRequired = false)
+    @PostMapping("/getPublicKey.do")
+    public Map<String, Object> getPublicKey() {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("code", 0);
+        map.put("msg", publicKey);
+        return map;
+    }
+
+    /**
+     * 生成验证码
+     */
+    @PermissionScanIgnore(loginRequired = false)
+    @GetMapping(value = "/getVerify.do")
+    public void getVerify(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            //设置相应类型,告诉浏览器输出的内容为图片
+            response.setContentType("image/jpeg");
+            //设置响应头信息，告诉浏览器不要缓存此内容
+            response.setHeader("Pragma", "No-cache");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setDateHeader("Expire", 0);
+            //输出验证码图片方法
+            RandomValidateCodeUtil.getRandomCode(request, response);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 }

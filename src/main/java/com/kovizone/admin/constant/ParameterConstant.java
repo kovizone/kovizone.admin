@@ -14,6 +14,8 @@ public class ParameterConstant {
 
 	public static final String PASSWORD = "password";
 
+	public static final String VERIFY = "verify";
+
 	public static final String MESSAGE = "message";
 
 	public static final String ICON = "icon";

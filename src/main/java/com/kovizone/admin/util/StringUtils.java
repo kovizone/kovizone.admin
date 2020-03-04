@@ -179,6 +179,9 @@ public class StringUtils extends org.springframework.util.StringUtils {
             return null;
         }
         int length = arg.length();
+        if (length >= 20) {
+            return arg.substring(0, 5) + buildHide(10) + arg.substring(length - 5);
+        }
         if (length >= 12) {
             return arg.substring(0, 4) + buildHide(length - 8) + arg.substring(length - 4);
         }
@@ -195,6 +198,18 @@ public class StringUtils extends org.springframework.util.StringUtils {
             return arg.substring(0, 1) + buildHide(length - 1);
         }
         return HIDE;
+    }
+
+    public static boolean isBlank(CharSequence cs) {
+        int strLen;
+        if (cs != null && (strLen = cs.length()) != 0) {
+            for (int i = 0; i < strLen; ++i) {
+                if (!Character.isWhitespace(cs.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
